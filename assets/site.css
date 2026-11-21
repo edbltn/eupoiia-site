@@ -1,0 +1,1077 @@
+@font-face {
+    font-family: "LM Roman 12";
+    src: url("fonts/lmroman12-regular.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "LM Roman 12";
+    src: url("fonts/lmroman12-italic.woff2") format("woff2");
+    font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+    font-family: "LM Roman 12";
+    src: url("fonts/lmroman12-bold.woff2") format("woff2");
+    font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "LM Roman 17";
+    src: url("fonts/lmroman17-regular.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+}
+/* Spherical Harmonics — site stylesheet.
+   A typeset-paper look: Computer Modern, small caps, numbered sections,
+   hairline rules. Shared by / and /shop/; page-specific blocks are
+   namespaced by class so a page that links this file only gets what it uses. */
+
+/* ---------- Fonts (self-hosted Computer Modern Unicode, see assets/fonts/) ---------- */
+@font-face {
+    font-family: "CMU Serif";
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url("fonts/cmu-serif-500-roman.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    font-style: italic;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url("fonts/cmu-serif-500-italic.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    font-style: normal;
+    font-weight: 600 700;
+    font-display: swap;
+    src: url("fonts/cmu-serif-700-roman.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "CMU Serif";
+    font-style: italic;
+    font-weight: 600 700;
+    font-display: swap;
+    src: url("fonts/cmu-serif-700-italic.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "CMU Typewriter Text";
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url("fonts/cmu-typewriter-text-500-roman.woff2") format("woff2");
+}
+
+/* ---------- Tokens ---------- */
+:root {
+    /* Type scale (2026-10-04): four steps. Display is the masthead only. */
+    --fs-small: 0.9rem;
+    --fs-body: 1.125rem;
+    --fs-large: 1.25rem;
+    --paper: #faf3e5;
+    --paper-deep: #f3eee2;
+    --ink: #1b1813;
+    --ink-soft: #4f4a40;
+    --ink-faint: #7a7366;
+    --sienna: #a86b3c;
+    --sienna-deep: #8a4f22;
+    --lane-green: #2f6a2a;
+    --road-yellow: #f2c230;
+    --hairline: rgba(27, 24, 19, 0.22);
+    --rule: rgba(27, 24, 19, 0.85);
+    --logo-filter: grayscale(1) brightness(0);
+    --serif: "LM Roman 12", "CMU Serif", "Latin Modern Roman", "Computer Modern", Georgia, "Times New Roman", serif;
+    --mono: "CMU Typewriter Text", "Latin Modern Mono", "SF Mono", Menlo, monospace;
+    /* Kept for pages that still reference it; everything here is set in --serif. */
+    --sans: var(--serif);
+    --measure: 66ch;
+    --page: 1080px;
+    --gutter: 1.25rem;
+}
+
+/* Dark only when the reader picks it (toggle, top right); light is the default. */
+:root[data-theme="dark"] {
+    --paper: #18130d;
+    --paper-deep: #1f1c16;
+    --ink: #ece6d8;
+    --ink-soft: #c2baa8;
+    --ink-faint: #8f8878;
+    --sienna: #d39a68;
+    --sienna-deep: #e0ad7e;
+    --lane-green: #8cc47f;
+    --hairline: rgba(236, 230, 216, 0.2);
+    --rule: rgba(236, 230, 216, 0.8);
+    --logo-filter: grayscale(1) brightness(0) invert(1);
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--serif);
+    font-size: var(--fs-body);
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--paper);
+    font-variant-numeric: oldstyle-nums;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: var(--road-yellow);
+    color: #1b1813;
+}
+
+:focus-visible {
+    outline: 2px solid var(--sienna-deep);
+    outline-offset: 3px;
+}
+
+a {
+    color: inherit;
+}
+
+.sc {
+    letter-spacing: 0.01em;
+}
+
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0.5rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.4rem 0.8rem;
+    z-index: 10;
+}
+
+.skip-link:focus {
+    left: 0.5rem;
+}
+
+/* ---------- Masthead ---------- */
+.masthead {
+    text-align: center;
+    padding: 1.4rem var(--gutter) 0.7rem;
+}
+
+.masthead-lockup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.masthead .logo {
+    width: 72px;
+    height: auto;
+}
+
+.masthead h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 6.2vw, 3.8rem);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.02;
+    text-wrap: balance;
+}
+
+.masthead h1 a {
+    text-decoration: none;
+}
+
+.masthead-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    max-width: var(--page);
+    margin: 0.9rem auto 0;
+    font-size: var(--fs-small);
+    font-style: italic;
+    color: var(--ink-soft);
+}
+
+.double-rule {
+    max-width: var(--page);
+    margin: 0 auto;
+    border-top: 2px solid var(--rule);
+    border-bottom: 0.5px solid var(--rule);
+    height: 5px;
+}
+
+.rule-wrap {
+    padding: 0 var(--gutter);
+}
+
+/* ---------- Section nav ---------- */
+.section-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.2rem 2rem;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 0.55rem var(--gutter);
+    border-bottom: 0.5px solid var(--hairline);
+    font-size: var(--fs-body);
+    letter-spacing: 0.01em;
+}
+
+.section-nav a {
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.1rem 0;
+    border-bottom: 1px solid transparent;
+}
+
+.section-nav a:hover,
+.section-nav a[aria-current="page"] {
+    border-bottom-color: var(--ink);
+}
+
+.section-nav a.nav-donate {
+    font-weight: 700;
+    border-bottom-color: var(--road-yellow);
+    border-bottom-width: 2px;
+}
+
+.section-nav a.nav-donate:hover {
+    border-bottom-color: var(--ink);
+}
+
+/* ---------- Lead art ---------- */
+.lead-art {
+    margin: 0;
+}
+
+.lead-art img {
+    display: block;
+    width: 100%;
+    height: clamp(220px, 40vw, 440px);
+    object-fit: cover;
+}
+
+.lead-art figcaption {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 0.45rem var(--gutter) 0;
+    font-size: var(--fs-small);
+    color: var(--ink-faint);
+}
+
+/* ---------- Demo bar ---------- */
+/* A plain notice under the banner: a live indicator, the product's name, one
+   sentence, and a real button. No arrow glyphs anywhere on the site. */
+.demo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.7rem 1.4rem;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 0.95rem var(--gutter);
+}
+
+.demo-copy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.75rem;
+    margin: 0;
+    text-align: center;
+}
+
+.demo-bar .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    letter-spacing: 0.01em;
+    font-weight: 700;
+    color: var(--lane-green);
+}
+
+.demo-bar .live-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--lane-green);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--lane-green) 45%, transparent);
+    animation: live-pulse 2.4s ease-out infinite;
+}
+
+@keyframes live-pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lane-green) 45%, transparent); }
+    70% { box-shadow: 0 0 0 0.45rem transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* City Edit's two-line tile logo (an inline <symbol>, see index.html); it
+   draws in currentColor, so it follows the page ink in light and dark. Its
+   viewBox carries a 9-unit empty margin, so WebKit's whole-pixel clip can't
+   shave the outer strokes. Heights are the old ones x 232/214, which keeps the
+   tiles the same size. */
+.ce-logo {
+    display: inline-block;
+    color: var(--ink);
+    vertical-align: middle;
+}
+
+.demo-bar .demo-logo {
+    width: auto;
+    height: 2.49rem;
+    aspect-ratio: 460 / 232;
+    align-self: center;
+}
+
+.demo-card-logo {
+    display: inline-block;
+    margin-bottom: 0.7rem;
+}
+
+.demo-card-logo .ce-logo {
+    height: 3.25rem;
+    aspect-ratio: 460 / 232;
+}
+
+.foot-demo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.foot-logo {
+    height: 1.79rem;
+    aspect-ratio: 460 / 232;
+    color: currentColor;
+}
+
+.demo-bar .demo-name {
+    font-size: var(--fs-large);
+    font-weight: 700;
+}
+
+/* Two short lines, set tight so the pair stands as tall as the logo and the
+   Demo button beside it. */
+.demo-bar .demo-line {
+    font-size: var(--fs-body);
+    line-height: 1.2;
+    text-align: left;
+    font-style: italic;
+    color: var(--ink-soft);
+}
+
+.demo-button {
+    display: inline-block;
+    padding: 0.42rem 1.05rem;
+    border: 1px solid var(--lane-green);
+    border-radius: 2px;
+    color: var(--lane-green);
+    letter-spacing: 0.01em;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.demo-button:hover,
+.demo-button:focus-visible {
+    background: var(--lane-green);
+    color: var(--paper);
+}
+
+/* ---------- Theme toggle ---------- */
+.masthead {
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 0.9rem;
+    right: var(--gutter);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0.5px solid var(--hairline);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+    color: var(--ink);
+    border-color: var(--rule);
+}
+
+.theme-toggle svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.theme-toggle .icon-sun,
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+    display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+    display: block;
+}
+
+/* The banner has a light and a dark plate; show the one for the page theme. */
+.lead-art .art-dark,
+:root[data-theme="dark"] .lead-art .art-light {
+    display: none;
+}
+
+:root[data-theme="dark"] .lead-art .art-dark {
+    display: block;
+}
+
+/* ---------- Page body ---------- */
+.container {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 1.75rem var(--gutter) 1rem;
+}
+
+.kicker {
+    text-transform: lowercase;
+    font-variant-caps: small-caps;
+    font-size: var(--fs-small);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--sienna-deep);
+}
+
+/* ---------- Credibility row (the one open block) ---------- */
+.credits {
+    border-top: 2px solid var(--rule);
+    padding-top: 0.6rem;
+    margin-bottom: 2.25rem;
+}
+
+.credits-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.credits-head .note {
+    font-size: var(--fs-small);
+    font-style: italic;
+    color: var(--ink-faint);
+}
+
+.logo-row {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.logo-row li {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.3rem 1rem;
+}
+
+.logo-row a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.logo-row .mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+}
+
+.logo-row img {
+    display: block;
+    max-width: min(100%, 200px);
+    max-height: 64px;
+    width: auto;
+    height: auto;
+    filter: var(--logo-filter);
+    opacity: 0.82;
+    transition: opacity 0.2s ease;
+}
+
+.logo-row a:hover img,
+.logo-row a:focus-visible img {
+    opacity: 1;
+}
+
+.logo-row .relation {
+    display: block;
+    text-transform: lowercase;
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    color: var(--sienna-deep);
+    font-size: var(--fs-small);
+    line-height: 1.2;
+}
+
+.logo-row .org {
+    display: block;
+    font-size: var(--fs-small);
+    line-height: 1.3;
+    color: var(--ink-soft);
+}
+
+/* ---------- Collapsible numbered sections ---------- */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 2px solid var(--rule);
+    padding-top: 0.6rem;
+    margin-bottom: 0.1rem;
+}
+
+.toolbar button {
+    font: inherit;
+    font-size: var(--fs-small);
+    font-style: italic;
+    color: var(--ink-soft);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 0.2em;
+    padding: 0.2rem 0;
+}
+
+.toolbar button:hover {
+    color: var(--ink);
+}
+
+details.sec {
+    border-bottom: 0.5px solid var(--hairline);
+    scroll-margin-top: 1rem;
+}
+
+details.sec > summary {
+    display: grid;
+    grid-template-columns: 1.4rem 2.6rem 1fr;
+    align-items: baseline;
+    padding: 0.75rem 0.25rem 0.7rem 0;
+    cursor: pointer;
+    list-style: none;
+}
+
+details.sec > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.sec > summary::before {
+    content: "+";
+    grid-column: 1;
+    font-family: var(--mono);
+    font-size: var(--fs-body);
+    color: var(--ink-faint);
+}
+
+details.sec[open] > summary::before {
+    content: "\2212";
+}
+
+details.sec > summary:hover::before,
+details.sec > summary:focus-visible::before {
+    color: var(--ink);
+}
+
+details.sec > summary .num {
+    grid-column: 2;
+    font-variant-numeric: lining-nums;
+    color: var(--sienna-deep);
+}
+
+details.sec > summary h2 {
+    grid-column: 3;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1.3;
+}
+
+details.sec > summary .title {
+    letter-spacing: 0.01em;
+    font-weight: 700;
+    font-size: var(--fs-large);
+    margin-right: 0.6em;
+}
+
+details.sec > summary .gist {
+    font-style: italic;
+    color: var(--ink-soft);
+}
+
+details.sec > summary:hover .gist {
+    color: var(--ink);
+}
+
+.sec-body {
+    padding: 0.1rem 0 1.6rem 4rem;
+    max-width: calc(var(--measure) + 4rem);
+}
+
+.sec-body p {
+    max-width: var(--measure);
+    margin-bottom: 0.85rem;
+    hyphens: auto;
+}
+
+.sec-body p:last-child {
+    margin-bottom: 0;
+}
+
+.sec-body a:not(.btn) {
+    color: var(--lane-green);
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 0.18em;
+}
+
+.sec-body a:not(.btn):hover {
+    text-decoration-thickness: 1.5px;
+}
+
+p.drop::first-letter {
+    font-weight: 500;
+    font-size: 3.1em;
+    float: left;
+    line-height: 0.8;
+    padding: 0.06em 0.1em 0 0;
+    color: var(--sienna);
+}
+
+/* Footnote-style asides */
+.aside {
+    font-size: var(--fs-small);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    border-top: 0.5px solid var(--hairline);
+    padding-top: 0.6rem;
+    margin-top: 1.1rem;
+    max-width: var(--measure);
+}
+
+.aside sup,
+sup.fn {
+    font-size: 0.7em;
+    line-height: 0;
+    color: var(--sienna-deep);
+}
+
+sup.fn a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Demo card */
+.demo-card {
+    padding: 0;
+}
+
+.demo-card p {
+    max-width: var(--measure);
+    text-indent: 0 !important;
+}
+
+.btn {
+    display: inline-block;
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    padding: 0.35rem 1rem 0.45rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+    margin-top: 0.8rem;
+}
+
+.btn-primary:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+/* Newsletter (card markup is rewritten by scripts/update_latest_post.py; keep class names) */
+.post-card {
+    border-top: 0.5px solid var(--hairline);
+    border-bottom: 0.5px solid var(--hairline);
+    padding: 0.8rem 0;
+    margin: 1rem 0 0.2rem;
+}
+
+.post-card p {
+    text-indent: 0 !important;
+}
+
+.post-card .dateline {
+    letter-spacing: 0.01em;
+    color: var(--sienna-deep);
+    margin-bottom: 0.1rem;
+}
+
+.post-card h3 {
+    font-size: var(--fs-large);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0.1rem 0 0.3rem;
+    text-wrap: balance;
+}
+
+.sec-body .post-card h3 a:not(.btn) {
+    color: var(--ink);
+}
+
+.post-card p:not(.dateline) {
+    font-style: italic;
+    color: var(--ink-soft);
+}
+
+.archive-line {
+    letter-spacing: 0.01em;
+    margin-top: 0.7rem;
+    text-indent: 0 !important;
+}
+
+/* People */
+.people-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
+    margin-bottom: 0.4rem;
+}
+
+.person h3 {
+    font-size: var(--fs-large);
+    font-weight: 700;
+}
+
+.person .role {
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 0 0 0.35rem;
+}
+
+.person p {
+    font-size: var(--fs-body);
+    color: var(--ink-soft);
+    text-indent: 0 !important;
+}
+
+.contact-note {
+    text-indent: 0 !important;
+}
+
+/* Acknowledgements */
+.funding-note p {
+    font-style: italic;
+    text-indent: 0 !important;
+}
+
+.funding-note strong {
+    font-style: normal;
+    font-weight: 700;
+}
+
+.relations {
+    list-style: none;
+    margin-top: 0.9rem;
+    max-width: var(--measure);
+}
+
+.relations li {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: 0 1rem;
+    padding: 0.35rem 0;
+    border-top: 0.5px solid var(--hairline);
+    font-size: var(--fs-body);
+}
+
+.relations li:last-child {
+    border-bottom: 0.5px solid var(--hairline);
+}
+
+.relations .relation {
+    text-transform: lowercase;
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    color: var(--sienna-deep);
+}
+
+/* ---------- Gallery (inside §) ---------- */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: none;
+}
+
+.sec-body.wide {
+    max-width: none;
+}
+
+.gallery-grid figure {
+    margin: 0;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.85);
+    transition: filter 0.25s ease;
+}
+
+.gallery-grid figure:hover img {
+    filter: saturate(1.05);
+}
+
+.gallery-grid figcaption {
+    font-size: var(--fs-small);
+    color: var(--ink-soft);
+    padding-top: 0.3rem;
+}
+
+.gallery-grid figcaption::first-line {
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Footer ---------- */
+footer {
+    max-width: var(--page);
+    margin: 2rem auto 0;
+    padding: 0 var(--gutter) 2rem;
+}
+
+.footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1.5rem 2rem;
+    border-top: 2px solid var(--rule);
+    padding-top: 1rem;
+}
+
+.footer-inner .wordmark {
+    font-size: var(--fs-large);
+    font-weight: 500;
+}
+
+.footer-inner .foot-tag {
+    font-size: var(--fs-small);
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 36ch;
+    margin-top: 0.25rem;
+}
+
+.foot-head {
+    letter-spacing: 0.01em;
+    font-weight: 700;
+    color: var(--sienna-deep);
+    margin-bottom: 0.35rem;
+}
+
+footer a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 0.18em;
+}
+
+footer a:hover {
+    text-decoration-thickness: 1.5px;
+}
+
+footer ul {
+    list-style: none;
+}
+
+footer li {
+    font-size: var(--fs-small);
+    margin-bottom: 0.2rem;
+}
+
+.copyright {
+    margin-top: 1.5rem;
+    padding-top: 0.6rem;
+    border-top: 0.5px solid var(--hairline);
+    font-size: var(--fs-small);
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.copyright span:last-child {
+    letter-spacing: 0.01em;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-inner {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-inner > div:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    body {
+        --fs-body: 1.06rem;
+    font-size: var(--fs-body);
+    }
+
+    details.sec > summary {
+        grid-template-columns: 1.2rem 2.2rem 1fr;
+    }
+
+    details.sec > summary .title {
+        display: block;
+    }
+
+    .sec-body {
+        padding-left: 0;
+    }
+
+    .people-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .relations li {
+        grid-template-columns: 1fr;
+    }
+
+    .logo-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .logo-row .mark {
+        height: 52px;
+    }
+
+    .logo-row img {
+        max-height: 52px;
+    }
+
+    .masthead-meta {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 540px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .masthead-lockup {
+        gap: 0.8rem;
+    }
+
+    .masthead .logo {
+        width: 52px;
+    }
+
+    .section-nav {
+        gap: 0.1rem 1.1rem;
+    }
+
+    .demo-bar .demo-line {
+    }
+
+    .theme-toggle {
+        top: 0.6rem;
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+    }
+
+    .demo-bar .live-dot {
+        animation: none;
+    }
+}
+
+@media print {
+    details.sec > .sec-body {
+        display: block;
+    }
+
+    .toolbar,
+    .skip-link {
+        display: none;
+    }
+}
+
+/* ---- Optical sizes (2026-09-30): LaTeX-style — 12pt cut for text, 17pt cut for display; CMU keeps the true small caps. ---- */
+:root { --display: "LM Roman 17", "LM Roman 12", "CMU Serif", Georgia, serif; }
+body { letter-spacing: -0.003em; }
+.masthead h1, .masthead .title, .masthead-lockup h1, .masthead-lockup .wordmark, h1 { font-family: var(--display); letter-spacing: -0.01em; }
+.kicker, .logo-row .relation, .relations .relation { font-family: "CMU Serif", var(--serif); }
