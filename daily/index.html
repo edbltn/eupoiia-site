@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=cf1a8aae" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=ca30145d" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=cf1a8aae">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=ca30145d">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -76,7 +76,7 @@
         .masthead h1 a { text-decoration: none; }
         #main.container { padding-top: 0.2rem; }
         .section-head { text-align: center; margin-bottom: 1.2rem; }
-        .question { font-family: var(--display); font-size: clamp(1.6rem, 4.5vw, 2.2rem); font-weight: 500; line-height: 1.15; margin: 0.8rem 0 0.2rem; text-wrap: balance; }
+        .question { font-family: var(--display); font-size: clamp(1.8rem, 5vw, 2.55rem); font-weight: 500; line-height: 1.1; margin: 0.9rem 0 0.25rem; text-wrap: balance; }
         .links a, .from a, .board a, .how a { color: var(--lane-green); text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
         .note { font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); margin: 0.4rem 0 0.8rem; text-align: center; }
 
@@ -208,11 +208,12 @@
         .tab { display: flex; align-items: center; justify-content: center; min-height: 44px;
                font-size: 1.125rem; line-height: inherit; color: var(--ink-faint); letter-spacing: 0.01em; }
         .tab-group.open .tab { color: var(--ink); }
-        .sub-tabs { display: flex; justify-content: center; align-items: center; min-height: 44px;
+        .sub-tabs { display: flex; justify-content: center; align-items: center; min-width: 0; min-height: 44px;
                     gap: 0.9rem; margin-top: 0.5rem; font-size: inherit; }
-        .sub-tabs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink-faint); padding-bottom: 0.1rem; border-bottom: 1.5px solid transparent; white-space: nowrap; }
+        .sub-tabs a { position: relative; display: inline-flex; align-items: center; min-width: 0; min-height: 44px; color: var(--ink-faint); white-space: nowrap; }
         .tab-group.open .sub-tabs a { color: var(--ink-soft); }
-        .sub-tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--sienna); }
+        .sub-tabs a[aria-current="page"] { color: var(--ink); }
+        .sub-tabs a[aria-current="page"]::after { content: ""; position: absolute; left: 0; right: 0; top: calc(50% + 0.9em); border-bottom: 1.5px solid var(--sienna); }
         .tabs a:hover { color: var(--ink); }
         .account-menu { position: relative; padding: 0; min-width: 0; flex: 1; }
         #account-toggle { display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem;
@@ -231,9 +232,11 @@
         #account-panel .account > span { min-width: 0; max-width: 100%; }
         @media (max-width: 760px) {
             .tab-account-row { justify-content: center; padding-right: 0; }
-            .tabs { min-width: 0; margin-left: 0; }
-            .tab-group { flex: 1; padding: 0 0.2rem 0.35rem; }
-            .sub-tabs { gap: 0.35rem; font-size: 0.7rem; }
+            .tabs { width: 100%; min-width: 0; margin-left: 0; }
+            .tab-group { flex: 0.85; padding: 0 0.2rem 0.35rem; }
+            .tab-group:last-child { flex: 1.15; }
+            .sub-tabs { gap: 0.25rem; font-size: 0.7rem; }
+            .sub-tabs a { overflow-wrap: normal; text-align: center; white-space: nowrap; word-break: normal; }
         }
         .progress { max-width: 44rem; margin: 0 auto 0.8rem; }
         .progress-bar { height: 6px; border: 0.5px solid var(--rule); border-radius: 3px; overflow: hidden; }
@@ -252,8 +255,12 @@
         .result-card .score-avatar { width: 24px; height: 24px; flex: none; border-radius: 50%; vertical-align: middle; }
         .result-card .score { font-family: var(--display); font-size: 3rem; line-height: 1; margin: 0.2rem 0 0.6rem; }
         .result-card .score .number { font-variant-numeric: lining-nums tabular-nums; }
-        .result-card .score .title { display: block; margin-top: 0.15rem; font-family: var(--serif); font-size: var(--fs-large); font-weight: 400; }
+        .result-card .score .title { display: block; margin-top: 0.2rem; font-family: var(--serif); font-size: clamp(1.4rem, 4vw, 1.75rem); font-weight: 400; }
         .result-card .description { margin: 0.4rem 0; font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); }
+        .result-card .score-factoids { display: grid; gap: 0.55rem; max-width: 30rem; margin: 1rem auto; text-align: left; }
+        .result-card .score-factoids div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); column-gap: 0.6rem; align-items: baseline; }
+        .result-card .score-factoids h3 { margin: 0; font-family: var(--display); font-size: var(--fs-small); font-weight: 500; }
+        .result-card .score-factoids p { margin: 0; color: var(--ink-soft); line-height: 1.4; }
         .result-card .score-explainer, .result-card .rank { margin: 0.4rem 0 0.2rem; font-size: var(--fs-small); color: var(--ink-soft); }
         .result-card .actions { position: relative; margin: 0.2rem 0; }
         .result-card .actions .copied { position: absolute; top: 100%; left: 0; right: 0; margin: 0.2rem 0 0; line-height: 1.3; text-align: center; }
@@ -339,11 +346,16 @@
         .past-vote { padding: 1.2rem; text-align: center; }
         .past-vote .past p { margin: 0.4rem 0; }
 
-        .board { width: 100%; max-width: 46rem; margin: 0 auto; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
+        .board-box { min-width: 0; overflow-x: hidden; }
+        .board { width: 100%; max-width: 46rem; margin: 0 auto; border-collapse: collapse; table-layout: fixed; font-variant-numeric: lining-nums tabular-nums; }
         .board th { text-align: left; font-weight: 700; color: var(--sienna-deep); border-bottom: 2px solid var(--rule); padding: 0.3rem 0.6rem 0.3rem 0; }
         .board td { padding: 0.35rem 0.6rem 0.35rem 0; border-bottom: 0.5px solid var(--hairline); vertical-align: top; }
-        .board td:nth-child(2) { overflow-wrap: anywhere; }
-        .board .num { text-align: right; white-space: nowrap; }
+        .board td:nth-child(2) { overflow-wrap: normal; word-break: normal; }
+        .board th:not(:nth-child(2)), .board td:not(:nth-child(2)) { text-align: right; white-space: nowrap; }
+        .board th:first-child, .board td:first-child { width: 1.7rem; }
+        .board th:nth-child(3), .board td:nth-child(3) { width: 3.4rem; }
+        .board th:nth-last-child(1), .board td:nth-last-child(1) { width: 2.8rem; }
+        .board th:nth-last-child(2), .board td:nth-last-child(2) { width: 3.6rem; }
         .board a { text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
         .unranked-head { max-width: 46rem; margin: 2rem auto 0.4rem; font-size: var(--fs-body); }
         .unranked { max-width: 46rem; margin: 0 auto; padding: 0; list-style: none; columns: 2 16rem; column-gap: 2rem; }
@@ -367,7 +379,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=cf1a8aae" alt="" class="logo">
+                <img src="/mark.svg?v=ca30145d" alt="" class="logo">
                 <h1><a href="/">Eupoiia Index</a></h1>
             </div>
             <div class="header-tools">
@@ -468,10 +480,10 @@
         })();
     </script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795235631,"catalog":["catalog-00-fd13b37eea8de732.json","catalog-01-b9c65dc58fe11007.json","catalog-02-a042e427f19f8e2f.json","catalog-03-d66dd871392af84e.json","catalog-04-2fc8e996eff2ae5a.json","catalog-05-bf638acc46195384.json","catalog-06-84b37cb59636b6bf.json","catalog-07-48a1deb1b2e44608.json","catalog-08-20cae3cb951e704e.json","catalog-09-e8c2245a22bcbb6a.json","catalog-10-225b46b407c860df.json","catalog-11-94d1a34da5f823ce.json","catalog-12-92c8c8d7de483c05.json","catalog-13-5a45f24ac808269b.json","catalog-14-6f1bf5918237a7df.json","catalog-15-b77d6666fd96a93b.json","catalog-16-3bb85c1d5577e0c9.json","catalog-17-746f615189ca7900.json","catalog-18-331176606e81dabe.json","catalog-19-73ed3f1d497b7f06.json","catalog-20-3a537c9e4bb62ab2.json","catalog-21-165c260b2e3c6310.json","catalog-22-a369bfaabb07a951.json","catalog-23-73643b44f66b058f.json","catalog-24-121cc26dc184ec06.json","catalog-25-92876bb625139559.json","catalog-26-cd957d02a5fb870d.json","catalog-27-b576adb7e2a41534.json","catalog-28-abcca3ea2b52672e.json","catalog-29-bd4abe3c4e16ea87.json","catalog-30-78db217a18ebeb81.json","catalog-31-5ba31b6a6ea53955.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json"},"files":{"contenders":"contenders-d336694248462890.json","deck_first":"deck-first-adc0870a9a53fa2b.json","deck_pool":"deck-pool-824fd7bec2ee6c3e.json","players_all":"players-all-985bd5ddb8fc4b91.json","players_today":"players-today-26fe914d1477a6c4.json","top":"top-5074f7ceaad5ea52.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-c9564ba213ccfb05.json","2026-11-19":"results-2026-11-19-4e5dd24d359308f9.json","2026-11-20":"results-2026-11-20-443b37e54d4deb0b.json"},"revision":308261,"today":"2026-11-20","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=cf1a8aae"></script>
-    <script defer src="/25-search-the-boards.js?v=cf1a8aae"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795294580,"catalog":["catalog-00-ecb871aaae49bf10.json","catalog-01-ee0f609abc83287e.json","catalog-02-5ddf57fec7c7fcdb.json","catalog-03-1c392c3d9d5b2b84.json","catalog-04-e8227bab1af559e4.json","catalog-05-ff2702e5b7e17ae7.json","catalog-06-4c17dab7ece82dcd.json","catalog-07-eb7d6de18e72dc5d.json","catalog-08-af3565d74e95c7c3.json","catalog-09-aaa25ab3f9cec583.json","catalog-10-bbead75d5d732d50.json","catalog-11-fe02c7ec147093e0.json","catalog-12-d8a2909e7fa31ff0.json","catalog-13-cee7c9931e63c18c.json","catalog-14-cc8e16befe539f3b.json","catalog-15-99b6b382a346366b.json","catalog-16-4b94c43619ff9aff.json","catalog-17-98666bb240202956.json","catalog-18-bf510f4df50877fb.json","catalog-19-96f882734ba91cc7.json","catalog-20-bad52448a75025d8.json","catalog-21-b06ff6622d7ffd78.json","catalog-22-94dec00e70670a90.json","catalog-23-35b4f9e34e55ded7.json","catalog-24-6368ea82ac1638ef.json","catalog-25-12854a2689e96259.json","catalog-26-148357bb9042bdf9.json","catalog-27-fbec77fb6b70dd8d.json","catalog-28-3758e5f630d5891b.json","catalog-29-7b4197a96e1f701e.json","catalog-30-5e6775798d84e2fc.json","catalog-31-f9757cc89798c54f.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-7c2df8367aabb1ab.json","deck_pool":"deck-pool-1e57533152f9c8f1.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-c2a7430568304fcb.json","top":"top-b3ad7d80863fda5e.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-ba127a4d35206e38.json","2026-11-19":"results-2026-11-19-b892f36c56f30ba4.json","2026-11-20":"results-2026-11-20-a7646411c448580e.json","2026-11-21":"results-2026-11-21-6e8b7350fd3254f1.json"},"revision":408699,"today":"2026-11-21","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=ca30145d"></script>
+    <script defer src="/25-search-the-boards.js?v=ca30145d"></script>
     
-    <script defer src="/20-play-the-cards.js?v=cf1a8aae"></script>
+    <script defer src="/20-play-the-cards.js?v=ca30145d"></script>
 </body>
 </html>
