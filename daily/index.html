@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=12502d9e" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=25f22a3a" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=12502d9e">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=25f22a3a">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -386,6 +386,40 @@
         .how { margin: 1rem auto 0; padding-top: 0; border-top: 0; }
         .how p { margin-bottom: 0.6rem; }
         footer { margin-top: 0.5rem; }
+        /* The credit line and the name's definition: small, in the page's own type, no boxes. */
+        .foot-credit { font-size: var(--fs-small); color: var(--ink-soft); margin: 0.6rem 0 0; max-width: 34rem; }
+        .foot-credit a { color: inherit; text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
+        .masthead-lockup { position: relative; }
+        .brand-name { display: flex; align-items: center; }
+        #name-info { flex: none; margin-left: 0.35rem; width: 1.6rem; height: 1.6rem; padding: 0; border: 0; background: none;
+                     color: var(--ink-soft); font: inherit; cursor: help; display: grid; place-items: center; border-radius: 50%; position: relative; }
+        /* An empty twin on the left keeps the logo and title centered. */
+        .masthead-brand::before { content: ""; flex: none; width: 1.95rem; margin-right: -1.25rem; }
+        #name-info::after { content: ""; position: absolute; inset: -9px; }
+        #name-info svg { width: 1.05rem; height: 1.05rem; }
+        #name-info:hover, #name-info:focus-visible, #name-info[aria-expanded="true"] { color: var(--ink); }
+        #name-info:focus-visible { outline: 1px solid var(--ink); outline-offset: 1px; }
+        #name-info-text { position: absolute; z-index: 30; top: calc(100% + 0.2rem); left: 50%; transform: translateX(-50%);
+                          width: min(22rem, calc(100vw - 2rem)); margin: 0; padding: 0.7rem 0.9rem; text-align: left;
+                          font-size: var(--fs-small); line-height: 1.45; color: var(--ink); background: var(--paper);
+                          border: 1px solid var(--ink); border-radius: var(--control-radius); }
+        #name-info-text[hidden] { display: none; }
+        @media (max-width: 1023px) { .masthead-brand::before { margin-right: -0.8rem; } }
+        /* On a phone the header has no spare width: the icon hangs off the title's right edge instead of adding to it. */
+        @media (max-width: 540px) {
+            .masthead-brand::before { display: none; }
+            .brand-name { position: relative; }
+            #name-info { position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin: 0 0 0 0.1rem; z-index: 2;
+                         width: 1.3rem; height: 1.3rem; }
+            #name-info::after { inset: -5px; }
+            #name-info svg { width: 0.9rem; height: 0.9rem; }
+        }
+        /* Below 400px even that touches the account button, so the icon sits left of the mark instead. */
+        @media (max-width: 400px) {
+            .masthead-brand { position: relative; }
+            .brand-name { position: static; }
+            #name-info { left: auto; right: 100%; margin: 0 0.1rem 0 0; }
+        }
         .how p:last-child { margin-bottom: 0; }
         @media (max-width: 1023px) { .header-tools { min-height: 44px; } }
         @media (max-width: 540px) { .half { padding: 0.6rem 0.45rem; } .half h3 { font-size: var(--fs-body); } .half .gist { font-size: var(--fs-small); } .board { font-size: var(--fs-small); } }
@@ -397,9 +431,13 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=12502d9e" alt="" class="logo">
-                <h1><a href="/">Eupoiia Index</a></h1>
+                <img src="/mark.svg?v=25f22a3a" alt="" class="logo">
+                <div class="brand-name">
+                    <h1><a href="/">Eupoiia Index</a></h1>
+                    <button type="button" id="name-info" aria-label="What does Eupoiia mean?" aria-describedby="name-info-text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>
+                </div>
             </div>
+            <p id="name-info-text" role="tooltip" hidden><i>Eupoiia</i> (Greek εὐποιΐα) means beneficence, doing good. This index ranks people and groups by who voters say has done more for the common good, two at a time.</p>
             <div class="header-tools">
                 <div class="account-menu">
                     <button type="button" id="account-toggle" aria-expanded="false" aria-controls="account-panel" aria-label="Sign in"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg><span class="account-label">Sign in</span></button>
@@ -459,6 +497,7 @@
             <div>
                 <div class="wordmark"><a href="https://sphericalharmonics.org/">Spherical Harmonics</a></div>
                 <p class="foot-tag">Eupoiia Index is a project of Spherical Harmonics. Home page: <a href="https://sphericalharmonics.org/">sphericalharmonics.org</a>.</p>
+                <p class="foot-credit">Inspired by <a href="https://eloeverything.co/">Elo Everything</a>. Entries and images come from <a href="https://www.wikipedia.org/">Wikipedia</a> and its sister projects: text under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, and each image under its own license, linked from its file page.</p>
             </div>
             <div>
                 <div class="foot-head">Get Involved</div>
@@ -497,11 +536,39 @@
             });
         })();
     </script>
+    <script>
+        // The name's definition: hover, keyboard focus or a tap shows it; Escape or a tap elsewhere hides it.
+        (function () {
+            var button = document.getElementById('name-info'), box = document.getElementById('name-info-text');
+            if (!button || !box) return;
+            var hovered = false, focused = false, pinned = false, dismissed = false;
+            function render() {
+                var open = !dismissed && (hovered || focused || pinned);
+                box.hidden = !open;
+                button.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            button.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovered = true; dismissed = false; render(); } });
+            button.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovered = false; render(); } });
+            button.addEventListener('focus', function () { focused = button.matches(':focus-visible'); dismissed = false; render(); });
+            button.addEventListener('blur', function () { focused = false; render(); });
+            button.addEventListener('click', function () {
+                var open = !box.hidden;
+                pinned = !open; dismissed = open; hovered = hovered && !open; focused = focused && !open;
+                render();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !box.hidden) { pinned = false; dismissed = true; render(); }
+            });
+            document.addEventListener('pointerdown', function (e) {
+                if (!box.hidden && e.target !== button && !button.contains(e.target) && !box.contains(e.target)) { pinned = false; dismissed = true; render(); }
+            });
+        })();
+    </script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795482228,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-2f94b6f993b97a86.json","deck_pool":"deck-pool-199efa4b68e036fc.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-b2a52363864dd816.json","top":"top-bcf4f0a331977abf.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-5dfa9ab7ad29e595.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json"},"revision":693747,"today":"2026-11-23","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=12502d9e"></script>
-    <script defer src="/25-search-the-boards.js?v=12502d9e"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795486244,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-3938e93882ec424b.json","deck_pool":"deck-pool-da948d17d2f53ee5.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-b2a52363864dd816.json","top":"top-bcf4f0a331977abf.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-5dfa9ab7ad29e595.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json"},"revision":709157,"today":"2026-11-23","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=25f22a3a"></script>
+    <script defer src="/25-search-the-boards.js?v=25f22a3a"></script>
     
-    <script defer src="/20-play-the-cards.js?v=12502d9e"></script>
+    <script defer src="/20-play-the-cards.js?v=25f22a3a"></script>
 </body>
 </html>
