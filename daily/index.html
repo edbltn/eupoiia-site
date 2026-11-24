@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=5f73a47a" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=005bee37" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=5f73a47a">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=005bee37">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -54,7 +54,8 @@
         /* Equal side columns center the brand independently of account identity. */
         .header-tools { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem;
                         width: 15rem; max-width: 100%; min-width: 0; justify-self: end; font-size: 0.85rem; line-height: 1.25; }
-        .header-tools .theme-toggle { position: static; flex: none; margin: 0; }
+        .header-tools .theme-toggle { position: relative; top: auto; right: auto; flex: none; margin: 0; }
+        .header-tools .theme-toggle::after { content: ""; position: absolute; inset: -6px; }
         @media (max-width: 1023px) {
             .masthead-brand { gap: 0.8rem; }
             .masthead .logo { width: 52px; }
@@ -62,6 +63,7 @@
             .header-tools { width: 12rem; }
         }
         @media (max-width: 540px) {
+            #account-toggle .account-label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
             .masthead-brand { gap: 0.4rem; }
             .masthead .logo { width: 28px; }
             .masthead h1 { font-size: clamp(1.125rem, 5vw, 1.7rem); }
@@ -77,7 +79,7 @@
         #main.container { padding-top: 0.2rem; }
         .section-head { text-align: center; margin-bottom: 1.2rem; }
         .question { font-family: var(--display); font-size: clamp(1.8rem, 5vw, 2.55rem); font-weight: 500; line-height: 1.1; margin: 0.9rem 0 0.25rem; text-wrap: balance; }
-        .links a, .from a, .board a, .how a { color: var(--lane-green); text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
+        .links a, .from a, .board a, .how a, .history a, .unranked a { color: inherit; text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
         .note { font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); margin: 0.4rem 0 0.8rem; text-align: center; }
 
         /* The feed: one card at a time, each with its own buttons. The next two are already loaded (hidden).
@@ -93,6 +95,8 @@
         .deck:has(.card.leaving, .card.dragging, .card.returning) { position: relative; z-index: 21; }
         .card { grid-area: 1 / 1; position: relative; display: flex; flex-direction: column; background: transparent; border: 1px solid #000;
                 border-radius: var(--control-radius); overflow: clip; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; transition: transform 0.35s ease; }
+        /* Black borders (Eric, feedback round 4) in the light theme; on dark paper they follow the ink so they show. */
+        :root[data-theme="dark"] .card, :root[data-theme="dark"] .sign-in-button, :root[data-theme="dark"] .email-sign-in-form button { border-color: var(--ink); }
         .card:not(:first-child) { display: none; }
         .card.leaving + .card { display: flex; animation: arrive 0.35s ease; }
         @keyframes arrive { from { transform: translateY(calc(100% + 2rem)); } to { transform: none; } }
@@ -235,7 +239,7 @@
             .tabs { width: 100%; min-width: 0; margin-left: 0; }
             .tab-group { flex: 0.85; padding: 0 0.2rem 0.35rem; }
             .tab-group:last-child { flex: 1.15; }
-            .sub-tabs { gap: 0.25rem; font-size: 0.7rem; }
+            .sub-tabs { gap: 0.45rem; font-size: 0.8rem; }
             .sub-tabs a { overflow-wrap: normal; text-align: center; white-space: nowrap; word-break: normal; }
         }
         .progress { max-width: 44rem; margin: 0 auto 0.8rem; }
@@ -246,7 +250,7 @@
                  justify-content: center; overflow-y: auto; padding: 1.5rem 0.8rem; }
         .modal[hidden] { display: none; }
         .modal-box { position: relative; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; max-width: 36rem; width: 100%; padding: 1.4rem 1.2rem; }
-        .modal-close { position: absolute; top: 0.4rem; right: 0.6rem; font: inherit; font-size: 1.6rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--ink-soft); }
+        .modal-close { position: absolute; top: 0; right: 0; width: 44px; height: 44px; font: inherit; font-size: 1.6rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
         .result-card { text-align: center; }
         .result-card .score-identity { display: flex; align-items: center; justify-content: center; gap: 0.45rem;
                                        min-width: 0; margin: 0.1rem 0 0.7rem; color: var(--ink-soft); }
@@ -262,7 +266,10 @@
         .result-card .score-factoids h3 { margin: 0; font-family: var(--display); font-size: var(--fs-small); font-weight: 500; }
         .result-card .score-factoids p { margin: 0; color: var(--ink-soft); line-height: 1.4; }
         .result-card .score-explainer, .result-card .rank { margin: 0.4rem 0 0.2rem; font-size: var(--fs-small); color: var(--ink-soft); }
-        .result-card .actions { position: relative; margin: 0.2rem 0; }
+        .result-card .actions { position: relative; margin: 0.6rem 0 0.2rem; }
+        .result-card .btn { min-height: 44px; padding: 0.35rem 0.9rem; border: 1px solid var(--ink); border-radius: var(--control-radius);
+                            background: var(--paper); color: var(--ink); font: inherit; font-weight: 400; letter-spacing: 0; cursor: pointer; }
+        .result-card .btn:hover, .result-card .btn:focus-visible { background: var(--paper-deep); }
         .result-card .actions .copied { position: absolute; top: 100%; left: 0; right: 0; margin: 0.2rem 0 0; line-height: 1.3; text-align: center; }
         .score-method { max-width: 68ch; margin: 1.2rem auto 0; line-height: 1.55; }
         .score-method p { margin: 0 0 0.7rem; }
@@ -271,13 +278,20 @@
         .result-card .rows { margin-top: 0.8rem; text-align: left; font-size: var(--fs-small); table-layout: fixed; }
         .result-card .rows td { overflow-wrap: anywhere; }
         .result-card .rows th.num, .result-card .rows td.num { width: 2.8rem; }
-        .copied { font-size: var(--fs-small); font-style: italic; color: var(--lane-green); margin-left: 0.5rem; }
-        .toggle { text-align: center; margin-bottom: 0.8rem; }
-        .toggle button { font: inherit; background: none; border: 1px solid var(--ink-soft); padding: 0.25rem 0.9rem; cursor: pointer; }
-        .toggle button + button { border-left: 0; }
-        .toggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+        .copied { font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); margin-left: 0.5rem; }
+        .toggle { display: flex; justify-content: center; gap: 1.2rem; margin: 0 0 0.6rem; font-size: var(--fs-small); }
+        .toggle button { position: relative; min-height: 44px; padding: 0 0.1rem; font: inherit; color: var(--ink-faint);
+                         background: none; border: 0; cursor: pointer; }
+        .toggle button:hover { color: var(--ink); }
+        .toggle button[aria-pressed="true"] { color: var(--ink); }
+        .toggle button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; top: calc(50% + 0.9em); border-bottom: 1.5px solid var(--sienna); }
         .board tr.me td { background: var(--paper-deep); font-weight: 700; }
-        .pagination { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.7rem; margin: 1.2rem auto; }
+        .pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.2rem 1rem;
+                      margin: 0.8rem auto; font-size: var(--fs-small); color: var(--ink-soft); }
+        .pagination a, .pagination button { display: inline-flex; align-items: center; min-height: 44px; padding: 0; font: inherit;
+                      color: var(--ink); background: none; border: 0; cursor: pointer;
+                      text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
+        .pagination button:disabled { color: var(--ink-faint); text-decoration: none; cursor: default; }
         .sign-in-row, .sign-in-actions { display: flex; justify-content: center; align-items: center;
                                        gap: 0.5rem; margin: 0; font-size: var(--fs-small); line-height: 1.25; }
         .sign-in-row { flex-wrap: nowrap; }
@@ -342,28 +356,31 @@
         .avatar { width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; }
         .share-note { position: absolute; left: 50%; bottom: 0.6rem; transform: translateX(-50%); max-width: calc(100% - 1rem);
                       padding: 0 0.2rem; background: var(--paper); pointer-events: none; white-space: nowrap;
-                      text-align: center; font-size: var(--fs-small); font-style: italic; color: var(--lane-green); }
+                      text-align: center; font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); }
         .past-vote { padding: 1.2rem; text-align: center; }
         .past-vote .past p { margin: 0.4rem 0; }
 
         .board-box { min-width: 0; overflow-x: hidden; }
         .board { width: 100%; max-width: 46rem; margin: 0 auto; border-collapse: collapse; table-layout: fixed; font-variant-numeric: lining-nums tabular-nums; }
-        .board th { text-align: left; font-weight: 700; color: var(--sienna-deep); border-bottom: 2px solid var(--rule); padding: 0.3rem 0.6rem 0.3rem 0; }
+        .board th { text-align: left; font-size: var(--fs-small); font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--rule); padding: 0.3rem 0.6rem 0.3rem 0; }
         .board td { padding: 0.35rem 0.6rem 0.35rem 0; border-bottom: 0.5px solid var(--hairline); vertical-align: top; }
         .board td:nth-child(2) { overflow-wrap: normal; word-break: normal; }
         .board th:not(:nth-child(2)), .board td:not(:nth-child(2)) { text-align: right; white-space: nowrap; }
-        .board th:first-child, .board td:first-child { width: 1.7rem; }
-        .board th:nth-child(3), .board td:nth-child(3) { width: 3.4rem; }
-        .board th:nth-last-child(1), .board td:nth-last-child(1) { width: 2.8rem; }
-        .board th:nth-last-child(2), .board td:nth-last-child(2) { width: 3.6rem; }
+        .board th:nth-child(2), .board td:nth-child(2) { width: auto; }
+        .board th:first-child, .board td:first-child { width: 1.9rem; }
+        .board th:nth-child(n+3), .board td:nth-child(n+3) { width: 3.6rem; }
+        .board th.wide, .board td.wide { width: 5.6rem; }
+        .board th:last-child, .board td:last-child { padding-right: 0; }
+        .board td[colspan] { text-align: left; white-space: normal; color: var(--ink-soft); }
+        .history .board th:first-child, .history .board td:first-child { width: 6.2rem; text-align: left; }
+        .history .board th:last-child, .history .board td:last-child { width: 4rem; }
         .board a { text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
         .unranked-head { max-width: 46rem; margin: 2rem auto 0.4rem; font-size: var(--fs-body); }
         .unranked { max-width: 46rem; margin: 0 auto; padding: 0; list-style: none; columns: 2 16rem; column-gap: 2rem; }
         .unranked li { break-inside: avoid; padding: 0.15rem 0; }
-        .unranked a { color: var(--lane-green); text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
-        .note-inline { font-size: var(--fs-small); color: var(--ink-faint); }
+                .note-inline { font-size: var(--fs-small); color: var(--ink-faint); }
         .history { max-width: 46rem; margin: 0 auto; }
-        .history .back a, .history .note a { color: var(--lane-green); }
+        .history .note { text-align: left; }
         .history h3 { font-family: var(--display); font-weight: 500; font-size: 1.6rem; margin: 0.4rem 0 0.2rem; }
         .how { margin: 1rem auto 0; padding-top: 0; border-top: 0; }
         .how p { margin-bottom: 0.6rem; }
@@ -379,7 +396,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=5f73a47a" alt="" class="logo">
+                <img src="/mark.svg?v=005bee37" alt="" class="logo">
                 <h1><a href="/">Eupoiia Index</a></h1>
             </div>
             <div class="header-tools">
@@ -481,9 +498,9 @@
     </script>
     
     <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795478856,"catalog":["catalog-00-ecb871aaae49bf10.json","catalog-01-ee0f609abc83287e.json","catalog-02-5ddf57fec7c7fcdb.json","catalog-03-1c392c3d9d5b2b84.json","catalog-04-e8227bab1af559e4.json","catalog-05-ff2702e5b7e17ae7.json","catalog-06-4c17dab7ece82dcd.json","catalog-07-eb7d6de18e72dc5d.json","catalog-08-af3565d74e95c7c3.json","catalog-09-aaa25ab3f9cec583.json","catalog-10-bbead75d5d732d50.json","catalog-11-fe02c7ec147093e0.json","catalog-12-d8a2909e7fa31ff0.json","catalog-13-cee7c9931e63c18c.json","catalog-14-cc8e16befe539f3b.json","catalog-15-99b6b382a346366b.json","catalog-16-4b94c43619ff9aff.json","catalog-17-98666bb240202956.json","catalog-18-bf510f4df50877fb.json","catalog-19-96f882734ba91cc7.json","catalog-20-bad52448a75025d8.json","catalog-21-b06ff6622d7ffd78.json","catalog-22-94dec00e70670a90.json","catalog-23-35b4f9e34e55ded7.json","catalog-24-6368ea82ac1638ef.json","catalog-25-12854a2689e96259.json","catalog-26-148357bb9042bdf9.json","catalog-27-fbec77fb6b70dd8d.json","catalog-28-3758e5f630d5891b.json","catalog-29-7b4197a96e1f701e.json","catalog-30-5e6775798d84e2fc.json","catalog-31-f9757cc89798c54f.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-25ae0f66f070aa64.json","deck_pool":"deck-pool-4430e9e2e4ccf891.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-b2a52363864dd816.json","top":"top-60bb78f79e07df7c.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-ba127a4d35206e38.json","2026-11-19":"results-2026-11-19-b892f36c56f30ba4.json","2026-11-20":"results-2026-11-20-a7646411c448580e.json","2026-11-21":"results-2026-11-21-6e8b7350fd3254f1.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json"},"revision":670635,"today":"2026-11-23","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=5f73a47a"></script>
-    <script defer src="/25-search-the-boards.js?v=5f73a47a"></script>
+    <script defer src="/22-static-data.js?v=005bee37"></script>
+    <script defer src="/25-search-the-boards.js?v=005bee37"></script>
     
-    <script defer src="/20-play-the-cards.js?v=5f73a47a"></script>
+    <script defer src="/20-play-the-cards.js?v=005bee37"></script>
 </body>
 </html>

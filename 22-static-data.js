@@ -315,7 +315,8 @@
                 return html || primary.then(function (source) { return from(source,'results',day).then(find); });
             }).catch(function () { return null; });
         }
-        function rowsTable(rows, players, mount, page, view) {
+        // One more number column goes in the two places below marked 'columns'; a long heading takes class "num wide".
+        function rowsTable(rows, players, mount, page, view, searching) {
             page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
             var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num">Score</th>' : '<th class="num">Rating</th><th class="num">W–T–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
@@ -324,11 +325,12 @@
                 else html += '<a href="?c=' + encodeURIComponent(row.qid) + '">' + escape(row.name) + '</a>';
                 html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num">' + Number(row.mean * 100).toFixed(2) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
             });
-            if (!shown.length) html += '<tr><td colspan="5">No matching names.</td></tr>';
+            if (!shown.length) html += '<tr><td colspan="' + (players ? (votesColumn ? 4 : 3) : 5) + '">' + (searching ? 'No matching names.'
+                : !players ? 'No votes yet.' : view === 'today' ? "No signed-in player has voted on today's Daily 10 yet." : 'No signed-in player has voted yet.') + '</td></tr>';
             html += '</tbody></table>';
             if (all > limit) html += '<nav class="pagination" aria-label="Leaderboard pages"><button type="button" data-static-page="' + Math.max(1, page - 1) + '"' + (page <= 1 ? ' disabled' : '') + '>Previous</button><span>Page ' + page + ' of ' + Math.ceil(all / limit) + '</span><button type="button" data-static-page="' + (page + 1) + '"' + (page * limit >= all ? ' disabled' : '') + '>Next</button></nav>';
             mount.innerHTML = html;
-            mount.querySelectorAll('[data-static-page]').forEach(function (button) { button.addEventListener('click', function () { rowsTable(rows, players, mount, Number(button.dataset.staticPage), view); }); });
+            mount.querySelectorAll('[data-static-page]').forEach(function (button) { button.addEventListener('click', function () { rowsTable(rows, players, mount, Number(button.dataset.staticPage), view, searching); }); });
         }
         function board(container, players, view, math) {
             var alive = true, search, table = document.createElement('div'), control = document.createElement('div'), explanation = document.createElement('div'), note = document.createElement('p');
@@ -348,7 +350,7 @@
                     if (!alive) return;
                     rows = players || view === 'all' ? full.rows : full.rows.filter(function (row) { return row.kind === view; });
                     if (search) { if (boardUpdate) boardUpdate(); return; }
-                    function render(filtered, state) { if (alive) rowsTable(filtered, players, table, state && state.page || 1, view); }
+                    function render(filtered, state) { if (alive) rowsTable(filtered, players, table, state && state.page || 1, view, !!(state && state.query)); }
                     search = window.eupoiiaSearch(control, { rows: rows, render: render });
                     boardUpdate = function () {
                         if (!alive) return;

@@ -754,7 +754,15 @@
                     }
                 }
                 deck.innerHTML = ''; take(html); hint();
-            }).catch(function () { if (!top()) deck.innerHTML = '<p class="note">This saved round is unavailable. Try Random or today’s Daily 10.</p>'; });
+            }).catch(function () {  // say which thing failed: a link to a pair that doesn't exist, a day that is gone, or no connection
+                if (top()) return;
+                var note = document.createElement('p'); note.className = 'note';
+                note.textContent = navigator.onLine === false ? "You're offline, and this page has no saved cards. Reconnect and reload."
+                    : mode === 'pair' ? 'This link doesn’t lead to a matchup. Try Random or today’s Daily 10.'
+                    : day && day !== window.eupoiiaStatic.today() ? 'That day’s Daily 10 isn’t available. Try Random or today’s Daily 10.'
+                    : 'The Daily 10 didn’t load. Reload the page to try again.';
+                deck.replaceChildren(note);
+            });
         }
         var path;
         if (mode === 'daily') {
