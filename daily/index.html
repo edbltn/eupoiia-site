@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=8e9501f1" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=9f5ea53a" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=8e9501f1">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=9f5ea53a">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -407,6 +407,8 @@
                           border: 1px solid var(--ink); border-radius: var(--control-radius); }
         #name-info-text[hidden] { display: none; }
         #name-info-text p { margin: 0 0 0.4rem; } #name-info-text p:last-child { margin-bottom: 0; }
+        #name-info-text a { color: inherit; font-size: inherit; text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
+        #name-info-text a:hover { text-decoration-thickness: 1px; }
         #name-info-text .head { font-size: 1.05rem; } #name-info-text .pron { color: var(--ink-soft); }
         #name-info-text .ety { font-size: 0.82rem; color: var(--ink-soft); }
         #name-info-text ol { margin: 0 0 0.4rem; padding-left: 1.2rem; } #name-info-text li { margin: 0; }
@@ -429,7 +431,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=8e9501f1" alt="" class="logo">
+                <img src="/mark.svg?v=9f5ea53a" alt="" class="logo">
                 <div class="brand-name">
                     <h1><a href="/">Eupoiia Index</a></h1>
                     <button type="button" id="name-info" aria-label="What does Eupoiia mean?" aria-describedby="name-info-text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>
@@ -439,7 +441,7 @@
                 <p class="entry"><b class="head">eu·poi·ï·a</b> <span class="pron">/juː ˈpɔɪ i ə/</span> <i>n.</i></p>
                 <p class="ety">from Ancient Greek <span lang="grc">εὐποιΐα</span> (<i>eupoiḯa</i>), from <span lang="grc">εὖ</span> (<i>eû</i>, “well”) + <span lang="grc">ποιέω</span> (<i>poiéō</i>, “to do, to make”) + <span lang="grc">-ία</span> (abstract-noun suffix).</p>
                 <ol><li>Beneficence; the disposition or practice of doing good to others.</li><li>A good deed; a benefaction.</li></ol>
-                <p class="ety"><i>Attested in:</i> Hebrews 13:16 (“<span lang="grc">τῆς δὲ εὐποιΐας καὶ κοινωνίας μὴ ἐπιλανθάνεσθε</span>”); cf. Liddell–Scott–Jones, s.v. <span lang="grc">εὐποιΐα</span>.</p>
+                <p class="ety"><i>Attested in:</i> <a href="https://www.biblegateway.com/passage/?search=Hebrews+13%3A16" target="_blank" rel="noopener">Hebrews 13:16</a> (“<span lang="grc">τῆς δὲ εὐποιΐας καὶ κοινωνίας μὴ ἐπιλανθάνεσθε</span>”); cf. <a href="https://logeion.uchicago.edu/%CE%B5%E1%BD%90%CF%80%CE%BF%CE%B9%CE%90%CE%B1" target="_blank" rel="noopener">Liddell–Scott–Jones</a>, s.v. <span lang="grc">εὐποιΐα</span>.</p>
             </div>
             <div class="header-tools">
                 <div class="account-menu">
@@ -555,6 +557,15 @@
             function enter(e) { if (e.pointerType !== 'mouse' || box.hidden && e.currentTarget === box) return; clearTimeout(leaving); hovered = true; if (e.currentTarget === button) dismissed = false; render(); }
             // A short grace lets the mouse cross from the icon to the text without the preview closing.
             function leave(e) { if (e.pointerType !== 'mouse') return; clearTimeout(leaving); leaving = setTimeout(function () { hovered = false; render(); }, 200); }
+            // The text hangs below the icon with a gap between them. While the preview is open, a mouse anywhere in the
+            // band that joins the two (the icon's width to the text's) counts as still on them, so a slow move across the gap never closes it.
+            document.addEventListener('pointermove', function (e) {
+                if (e.pointerType !== 'mouse' || box.hidden || !hovered && !leaving) return;
+                var a = button.getBoundingClientRect(), b = box.getBoundingClientRect();
+                if (e.clientY > a.bottom - 2 && e.clientY < b.top + 2 && e.clientX >= Math.min(a.left, b.left) - 6 && e.clientX <= Math.max(a.right, b.right) + 6) {
+                    clearTimeout(leaving); hovered = true; render();
+                }
+            });
             [button, box].forEach(function (el) { el.addEventListener('pointerenter', enter); el.addEventListener('pointerleave', leave); });
             button.addEventListener('focus', function () { focused = button.matches(':focus-visible'); dismissed = false; render(); });
             button.addEventListener('blur', function () { focused = false; render(); });
@@ -568,10 +579,10 @@
         })();
     </script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795550295,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-0eecdeb5848cdea9.json","deck_pool":"deck-pool-e5edf215818e8c45.json","players_all":"players-all-38f0a533f26d366d.json","players_today":"players-today-5d43108566c994df.json","top":"top-7e719850939807c8.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-409885bf35f243aa.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json"},"revision":770790,"today":"2026-11-24","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=8e9501f1"></script>
-    <script defer src="/25-search-the-boards.js?v=8e9501f1"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795552483,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-3558b48611068d4e.json","deck_pool":"deck-pool-788d9cc7bb75868f.json","players_all":"players-all-38f0a533f26d366d.json","players_today":"players-today-5d43108566c994df.json","top":"top-7e719850939807c8.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-409885bf35f243aa.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json"},"revision":778494,"today":"2026-11-24","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=9f5ea53a"></script>
+    <script defer src="/25-search-the-boards.js?v=9f5ea53a"></script>
     
-    <script defer src="/20-play-the-cards.js?v=8e9501f1"></script>
+    <script defer src="/20-play-the-cards.js?v=9f5ea53a"></script>
 </body>
 </html>
