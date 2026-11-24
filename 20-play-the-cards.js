@@ -173,7 +173,7 @@
         }
     }
     function publicName(player) {
-        return player && player.name || 'Unnamed player';
+        return player && player.name || '';  // the server always stores a name or a pseudonym
     }
     // Result HTML may have been generated before the account response arrived.  Only an
     // own completion gets this local identity; a shared result always keeps its owner's copy.
@@ -356,7 +356,7 @@
     }
     function paintKnownAccount() {
         var token = sessionToken(), confirmed = accountConfirmed;
-        showAccount({player:token ? {name:'Unnamed player'} : null,sign_in:defaultSignIn}, true);
+        showAccount({player:token ? {name:''} : null,sign_in:defaultSignIn}, true);  // the name arrives with /me
         if (!token) return;
         var candidates = [];
         [displayCacheKey,'eupoiia-public-account-v1'].forEach(function (key) {
@@ -376,11 +376,11 @@
             if (currentPlayer.avatar) {
                 var img = document.createElement('img'); img.src = currentPlayer.avatar; img.alt = ''; img.className = 'avatar'; img.referrerPolicy = 'no-referrer'; account.append(img);
             }
-            var who = document.createElement('span'); who.className = 'account-name'; who.textContent = 'Signed in as ' + publicName(currentPlayer); who.title = publicName(currentPlayer);
+            var who = document.createElement('span'); who.className = 'account-name'; who.textContent = publicName(currentPlayer) ? 'Signed in as ' + publicName(currentPlayer) : 'Signed in'; who.title = publicName(currentPlayer);
             account.append(who, formButton('Sign out', function () {}, 'button')); account.lastChild.className = 'sign-out';
             if (authState !== 'error') state('account');
             if (accountToggle) {
-                accountToggle.replaceChildren(); accountToggle.setAttribute('aria-label', 'Account: ' + publicName(currentPlayer));
+                accountToggle.replaceChildren(); accountToggle.setAttribute('aria-label', publicName(currentPlayer) ? 'Account: ' + publicName(currentPlayer) : 'Account');
                 if (currentPlayer.avatar) {
                     var avatar = document.createElement('img'); avatar.src = currentPlayer.avatar; avatar.alt = ''; avatar.className = 'avatar'; avatar.referrerPolicy = 'no-referrer'; accountToggle.append(avatar);
                 } else if (accountIcon) accountToggle.append(accountIcon.cloneNode(true));
