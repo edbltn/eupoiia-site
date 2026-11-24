@@ -6,8 +6,8 @@
     function key(a, b) { return [a, b].sort().join('-'); }
     function nyDay() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
     function escape(value) { var e = document.createElement('span'); e.textContent = value == null ? '' : String(value); return e.innerHTML; }
-    function read(url) {
-        var controller = new AbortController(), timer = setTimeout(function () { controller.abort(); }, 1200);
+    function read(url, patience) {
+        var controller = new AbortController(), timer = setTimeout(function () { controller.abort(); }, patience || 1200);
         return fetch(url, { signal: controller.signal }).then(function (r) { if (!r.ok) throw new Error('static'); return r.json(); }).finally(function () { clearTimeout(timer); });
     }
     function create(options) {
@@ -37,25 +37,39 @@
         var primary = read(base + 'manifest.json').then(function (manifest) { return { manifest: manifest, base: base }; })
             .catch(function (error) { if (bootstrap) return { manifest: bootstrap.manifest, base: fallback }; throw error; });
         primary.catch(function () {});
-        var ready = bootstrap && bootstrap.manifest ? Promise.resolve({ manifest: bootstrap.manifest, base: fallback }) : primary;
-        // The bundled snapshot is immediately useful; a newer CDN generation is adopted for later reads.
-        var current = bootstrap ? { manifest: bootstrap.manifest, base: fallback } : null;
+        // A bundle published today is immediately useful; a newer CDN generation is adopted for later reads.
+        // A bundle from an earlier day has no card set for today and an old Today board, so the page waits
+        // for the published manifest and keeps the bundle for when that can't be reached.
+        var bundled = bootstrap && bootstrap.manifest ? { manifest: bootstrap.manifest, base: fallback } : null;
+        var bundledToday = !!bundled && bundled.manifest.today === nyDay();
+        var ready = bundledToday ? Promise.resolve(bundled) : primary;
+        var current = bundledToday ? bundled : null, patient = null;
         primary.then(function (fresh) { current = fresh; }).catch(function () {});
+        function published() {  // the published manifest; asked once more, with patience, if the quick read failed
+            return primary.then(function (source) { if (source.base === base) return source; throw new Error('bundled'); }).catch(function () {
+                if (!patient) patient = read(base + 'manifest.json', 8000).then(function (manifest) { return current = { manifest: manifest, base: base }; })
+                    .catch(function (error) { patient = null; throw error; });
+                return patient;
+            });
+        }
         function file(source, kind, day) {
             return kind === 'daily' || kind === 'results' ? source.manifest[kind][day] : source.manifest.files[kind];
         }
-        function from(source, kind, day) {
+        function from(source, kind, day, patience) {
             var name = file(source, kind, day);
             if (!name) return Promise.reject(new Error('missing static day'));
             if (bootstrap && source.base === fallback && bootstrap.files && bootstrap.files[name]) return Promise.resolve(bootstrap.files[name]);
             var url = source.base + name;
-            if (!memory.has(url)) memory.set(url, read(url).catch(function (error) { memory.delete(url); throw error; }));
+            if (!memory.has(url)) memory.set(url, read(url, patience).catch(function (error) { memory.delete(url); throw error; }));
             return memory.get(url);
         }
         function data(kind, day) {
             return ready.then(function (initial) {
                 var source = current || initial;
-                return from(source, kind, day).catch(function () {
+                // A day the bundle predates is listed only in the published manifest: wait for it, don't give up.
+                var first = (file(source, kind, day) || source.base === base) ? from(source, kind, day)
+                    : published().then(function (fresh) { return from(fresh, kind, day, 8000); });
+                return first.catch(function () {
                     if (bootstrap) return from({ manifest: bootstrap.manifest, base: fallback }, kind, day);
                     throw new Error('snapshot unavailable');
                 });
@@ -320,28 +334,38 @@
             var alive = true, search, table = document.createElement('div'), control = document.createElement('div'), explanation = document.createElement('div'), note = document.createElement('p');
             table.innerHTML = container.innerHTML; note.className = 'score-explainer note';
             container.replaceChildren(control, table, note, explanation);
-            data('top').then(function (top) {
+            var rows = [], drawnFrom = current;
+            function fill() { return data('top').then(function (top) {
                 if (!alive) return;
                 var part = players ? top.players[view] : top.contenders[view];
-                table.innerHTML = part.html;
-                table.querySelectorAll('.score-method,.pagination').forEach(function (e) { e.remove(); });
+                if (!search) {
+                    table.innerHTML = part.html;
+                    table.querySelectorAll('.score-method,.pagination').forEach(function (e) { e.remove(); });
+                }
                 explanation.innerHTML = part.explanation_html;
                 math(explanation);
                 return data(players ? 'players_' + view : 'contenders').then(function (full) {
                     if (!alive) return;
-                    var rows = players || view === 'all' ? full.rows : full.rows.filter(function (row) { return row.kind === view; });
+                    rows = players || view === 'all' ? full.rows : full.rows.filter(function (row) { return row.kind === view; });
+                    if (search) { if (boardUpdate) boardUpdate(); return; }
                     function render(filtered, state) { if (alive) rowsTable(filtered, players, table, state && state.page || 1, view); }
                     search = window.eupoiiaSearch(control, { rows: rows, render: render });
                     boardUpdate = function () {
                         if (!alive) return;
                         var fresh = players && playerBoards && playerBoards[view];
-                        if (fresh) { rows = fresh; search.setRows(rows); }
-                        else render(search.filter(control.querySelector('input').value), {page:1});
+                        if (fresh) rows = fresh;
+                        search.setRows(rows);
                         note.textContent = players && owner ? owner.name + "'s votes are recalculated using current Elo ratings. Their score can change as those ratings change." : '';
                     };
                     boardUpdate();
                 });
-            }).catch(function () { /* The pre-rendered board remains usable while its snapshot is unavailable. */ });
+            }).catch(function () { /* The pre-rendered board remains usable while its snapshot is unavailable. */ }); }
+            // A board drawn from the bundle is filled again, in place, once a newer published snapshot arrives.
+            var filled = fill();
+            primary.then(function (fresh) {
+                if (!drawnFrom || fresh.base !== base || fresh.manifest.revision === drawnFrom.manifest.revision) return;
+                return filled.then(function () { if (alive) return fill(); });
+            }).catch(function () {});
             return function () { alive = false; if (search) search.destroy(); };
         }
         function contender(qid) {
