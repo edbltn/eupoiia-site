@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=005bee37" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=6ee54893" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=005bee37">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=6ee54893">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -250,7 +250,7 @@
                  justify-content: center; overflow-y: auto; padding: 1.5rem 0.8rem; }
         .modal[hidden] { display: none; }
         .modal-box { position: relative; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; max-width: 36rem; width: 100%; padding: 1.4rem 1.2rem; }
-        .modal-close { position: absolute; top: 0; right: 0; width: 44px; height: 44px; font: inherit; font-size: 1.6rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
+        .modal-close { position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; outline-offset: -4px; font: inherit; font-size: 1.6rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
         .result-card { text-align: center; }
         .result-card .score-identity { display: flex; align-items: center; justify-content: center; gap: 0.45rem;
                                        min-width: 0; margin: 0.1rem 0 0.7rem; color: var(--ink-soft); }
@@ -262,14 +262,14 @@
         .result-card .score .title { display: block; margin-top: 0.2rem; font-family: var(--serif); font-size: clamp(1.4rem, 4vw, 1.75rem); font-weight: 400; }
         .result-card .description { margin: 0.4rem 0; font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); }
         .result-card .score-factoids { display: grid; gap: 0.55rem; max-width: 30rem; margin: 1rem auto; text-align: left; }
-        .result-card .score-factoids div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); column-gap: 0.6rem; align-items: baseline; }
-        .result-card .score-factoids h3 { margin: 0; font-family: var(--display); font-size: var(--fs-small); font-weight: 500; }
+        .result-card .score-factoids div { display: block; }
+        .result-card .score-factoids h3 { margin: 0 0 0.1rem; font-family: var(--serif); font-size: var(--fs-small); font-weight: 700; color: var(--ink); }
         .result-card .score-factoids p { margin: 0; color: var(--ink-soft); line-height: 1.4; }
         .result-card .score-explainer, .result-card .rank { margin: 0.4rem 0 0.2rem; font-size: var(--fs-small); color: var(--ink-soft); }
         .result-card .actions { position: relative; margin: 0.6rem 0 0.2rem; }
-        .result-card .btn { min-height: 44px; padding: 0.35rem 0.9rem; border: 1px solid var(--ink); border-radius: var(--control-radius);
+        .result-card .btn, .past-vote .btn { min-height: 44px; padding: 0.35rem 0.9rem; border: 1px solid var(--ink); border-radius: var(--control-radius);
                             background: var(--paper); color: var(--ink); font: inherit; font-weight: 400; letter-spacing: 0; cursor: pointer; }
-        .result-card .btn:hover, .result-card .btn:focus-visible { background: var(--paper-deep); }
+        .result-card .btn:hover, .result-card .btn:focus-visible, .past-vote .btn:hover, .past-vote .btn:focus-visible { background: var(--paper-deep); }
         .result-card .actions .copied { position: absolute; top: 100%; left: 0; right: 0; margin: 0.2rem 0 0; line-height: 1.3; text-align: center; }
         .score-method { max-width: 68ch; margin: 1.2rem auto 0; line-height: 1.55; }
         .score-method p { margin: 0 0 0.7rem; }
@@ -372,7 +372,7 @@
         .board th.wide, .board td.wide { width: 5.6rem; }
         .board th:last-child, .board td:last-child { padding-right: 0; }
         .board td[colspan] { text-align: left; white-space: normal; color: var(--ink-soft); }
-        .history .board th:first-child, .history .board td:first-child { width: 6.2rem; text-align: left; }
+        .history .board th:first-child, .history .board td:first-child { width: 7.2rem; text-align: left; }
         .history .board th:last-child, .history .board td:last-child { width: 4rem; }
         .board a { text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
         .unranked-head { max-width: 46rem; margin: 2rem auto 0.4rem; font-size: var(--fs-body); }
@@ -396,7 +396,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=005bee37" alt="" class="logo">
+                <img src="/mark.svg?v=6ee54893" alt="" class="logo">
                 <h1><a href="/">Eupoiia Index</a></h1>
             </div>
             <div class="header-tools">
@@ -497,10 +497,10 @@
         })();
     </script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795478856,"catalog":["catalog-00-ecb871aaae49bf10.json","catalog-01-ee0f609abc83287e.json","catalog-02-5ddf57fec7c7fcdb.json","catalog-03-1c392c3d9d5b2b84.json","catalog-04-e8227bab1af559e4.json","catalog-05-ff2702e5b7e17ae7.json","catalog-06-4c17dab7ece82dcd.json","catalog-07-eb7d6de18e72dc5d.json","catalog-08-af3565d74e95c7c3.json","catalog-09-aaa25ab3f9cec583.json","catalog-10-bbead75d5d732d50.json","catalog-11-fe02c7ec147093e0.json","catalog-12-d8a2909e7fa31ff0.json","catalog-13-cee7c9931e63c18c.json","catalog-14-cc8e16befe539f3b.json","catalog-15-99b6b382a346366b.json","catalog-16-4b94c43619ff9aff.json","catalog-17-98666bb240202956.json","catalog-18-bf510f4df50877fb.json","catalog-19-96f882734ba91cc7.json","catalog-20-bad52448a75025d8.json","catalog-21-b06ff6622d7ffd78.json","catalog-22-94dec00e70670a90.json","catalog-23-35b4f9e34e55ded7.json","catalog-24-6368ea82ac1638ef.json","catalog-25-12854a2689e96259.json","catalog-26-148357bb9042bdf9.json","catalog-27-fbec77fb6b70dd8d.json","catalog-28-3758e5f630d5891b.json","catalog-29-7b4197a96e1f701e.json","catalog-30-5e6775798d84e2fc.json","catalog-31-f9757cc89798c54f.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-25ae0f66f070aa64.json","deck_pool":"deck-pool-4430e9e2e4ccf891.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-b2a52363864dd816.json","top":"top-60bb78f79e07df7c.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-ba127a4d35206e38.json","2026-11-19":"results-2026-11-19-b892f36c56f30ba4.json","2026-11-20":"results-2026-11-20-a7646411c448580e.json","2026-11-21":"results-2026-11-21-6e8b7350fd3254f1.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json"},"revision":670635,"today":"2026-11-23","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=005bee37"></script>
-    <script defer src="/25-search-the-boards.js?v=005bee37"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795482228,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-2f94b6f993b97a86.json","deck_pool":"deck-pool-199efa4b68e036fc.json","players_all":"players-all-c247ea10914b7bef.json","players_today":"players-today-b2a52363864dd816.json","top":"top-bcf4f0a331977abf.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-5dfa9ab7ad29e595.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json"},"revision":693747,"today":"2026-11-23","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=6ee54893"></script>
+    <script defer src="/25-search-the-boards.js?v=6ee54893"></script>
     
-    <script defer src="/20-play-the-cards.js?v=005bee37"></script>
+    <script defer src="/20-play-the-cards.js?v=6ee54893"></script>
 </body>
 </html>

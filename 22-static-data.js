@@ -318,7 +318,7 @@
         // One more number column goes in the two places below marked 'columns'; a long heading takes class "num wide".
         function rowsTable(rows, players, mount, page, view, searching) {
             page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
-            var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num">Score</th>' : '<th class="num">Rating</th><th class="num">W–T–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
+            var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num">Score</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
                 html += '<tr' + (players && owner && row.key === owner.board_key ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
                 if (players) html += escape(row.name);
