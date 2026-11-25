@@ -90,11 +90,14 @@
             }, function () { box.textContent = 'The summary could not be loaded. Try again in a moment.'; filled = false; box.setAttribute('data-lazy', ''); });
         }
         function render() {
-            var open = pinned || (!dismissed && (hovered || focused));
+            var open = pinned || (!dismissed && (hovered || focused)), opening = open && box.hidden;
             if (open && current && current !== self) current.close();
             box.hidden = !open;
             button.setAttribute('aria-expanded', open ? 'true' : 'false');
-            if (open) { current = self; fill(); draw(box); place(button, box); } else if (current === self) current = null;
+            // The box is placed once, as it opens. Hover, focus and a click each render again, and placing it again each time
+            // moved it whenever anything it is placed against had changed in between (a scrollbar shrinking the page, the card
+            // narrowing): it jumped as it was pinned. It is placed again only when the page is resized or its text arrives.
+            if (open) { current = self; fill(); draw(box); if (opening) place(button, box); } else if (current === self) current = null;
         }
         function close() { pinned = false; dismissed = true; hovered = false; render(); }
         function enter(e) { if (e.pointerType !== 'mouse' || box.hidden && e.currentTarget === box) return; clearTimeout(leaving); hovered = true; if (e.currentTarget === button) dismissed = false; render(); }
