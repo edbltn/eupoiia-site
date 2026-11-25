@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=7a67d877" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=2a5044a9" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=7a67d877">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=2a5044a9">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -92,6 +92,9 @@
         body { isolation: isolate; }
         #game { overflow: visible; }
         .deck { display: grid; max-width: 44rem; margin: 0 auto; }
+        /* The card written into the page only holds its place, as an empty frame, until the page script has picked
+           the deck: the first card a reader sees is the one that stays. */
+        .deck[data-pending] .card > * { visibility: hidden; }
         /* A transformed card needs a deck layer above every page layer, including the result modal, while it is
            actively dragged, springs back, or flies away. */
         .deck:has(.card.leaving, .card.dragging, .card.returning) { position: relative; z-index: 21; }
@@ -450,7 +453,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=7a67d877" alt="" class="logo">
+                <img src="/mark.svg?v=2a5044a9" alt="" class="logo">
                 <div class="brand-name">
                     <h1><a href="/">Eupoiia Index</a></h1>
                     <button type="button" id="name-info" aria-label="What does Eupoiia mean?" aria-describedby="name-info-text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>
@@ -599,9 +602,9 @@
     </script>
     
     <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795630979,"catalog":["catalog-00-56d8a3cbb8118fdb.json","catalog-01-b2ae99cab6a5d720.json","catalog-02-cc8607a41cb689ab.json","catalog-03-bbc8bead667a80c0.json","catalog-04-9b84e78923f5a7b9.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-71fb96cbc2f73e19.json","catalog-10-20a327221cee47bc.json","catalog-11-a331cdf3ff2ea3b2.json","catalog-12-844f9d59b6e7e991.json","catalog-13-131c10c6da91847b.json","catalog-14-ec38368259f364a4.json","catalog-15-c4293c8096c5dc78.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-13892a3cb2767bdc.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-0579cc9c410b56d0.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-5d582ef7635d075d.json","catalog-25-96030234dadd4945.json","catalog-26-cce8a9dad4ed9d49.json","catalog-27-df93c4b517b3edf2.json","catalog-28-6d5b402b3d328e06.json","catalog-29-83c30be4d6c5b421.json","catalog-30-032837ca6687581f.json","catalog-31-f31cf70742519cff.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json","2026-11-26":"daily-2026-11-26-4e9610be573d2bc8.json"},"files":{"contenders":"contenders-5872ed989e0d07ac.json","deck_first":"deck-first-7773cd08a8c6d301.json","deck_pool":"deck-pool-bd081988a16f385c.json","players_all":"players-all-e91d30d9ade8be5d.json","players_today":"players-today-33c5aea6606221e3.json","top":"top-1e7d609f87fe6c59.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-ce85fc9e43ccbdb0.json","2026-11-19":"results-2026-11-19-ad34b01c66aac4d4.json","2026-11-20":"results-2026-11-20-09e6497323e910fa.json","2026-11-21":"results-2026-11-21-9309c8d42490e026.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json","2026-11-25":"results-2026-11-25-49b53401bdc65c8b.json"},"revision":871332,"today":"2026-11-25","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=7a67d877"></script>
-    <script defer src="/25-search-the-boards.js?v=7a67d877"></script>
+    <script defer src="/22-static-data.js?v=2a5044a9"></script>
+    <script defer src="/25-search-the-boards.js?v=2a5044a9"></script>
     
-    <script defer src="/20-play-the-cards.js?v=7a67d877"></script>
+    <script defer src="/20-play-the-cards.js?v=2a5044a9"></script>
 </body>
 </html>

@@ -429,23 +429,27 @@
             var next = me.player; accountConfirmed++;
             if (!next && requestToken) { cookie('cgi_session','',0); requestToken = ''; }
             showAccount(me); cacheAccount(next,requestToken);
+            var known;
             if (staticClient) {
                 var priorDaily = staticClient.state();
-                staticClient.identity(me).then(function () {
+                known = staticClient.identity(me).then(function () {
                     if (requestToken !== sessionToken()) return;
                     if (sharedActive && sharedOwner && Object.prototype.hasOwnProperty.call(me,'shared_result')) {
                         sharedFromAccount = true; applyShared(me.shared_result && me.shared_result.html,false);
                     }
                     var nextDaily = staticClient.state();
-                    if (!deck || busy) return;
+                    if (!deck || busy || !picked) return;  // not picked yet: the first load() uses this account state
+                    // The account's Daily 10 wins over this browser's. A Random card on screen stays, even if the
+                    // account voted on it elsewhere (that vote is refused as a repeat); a shared pair shows its past view.
                     if ((mode === 'daily' || mode === 'pair' && day) &&
                         (nextDaily && (!priorDaily || priorDaily.seed !== nextDaily.seed || priorDaily.done !== nextDaily.done) ||
                          me.daily && me.daily.requested && (!priorDaily || priorDaily.seed !== me.daily.requested.seed))) load();
-                    else if (top() && (me.voted || []).includes(top().dataset.pair)) load();
+                    else if (mode === 'pair' && top() && (me.voted || []).includes(top().dataset.pair)) load();
                 });
             }
             if (reactive && ((prior && prior.handle) !== (next && next.handle) ||
                 (prior && prior.name) !== (next && next.name) || (prior && prior.needs_name) !== (next && next.needs_name))) location.reload();
+            return known;
         }, function () {});
     }
     paintKnownAccount();
@@ -485,7 +489,7 @@
         if (code === 'failed') return Promise.resolve();
         return exchangeCode(code).catch(function () { loginFailure("Sign-in didn't finish. Try again."); });
     })();
-    authenticated.then(function () { return refreshAccount(false); });
+    var accountKnown = authenticated.then(function () { return refreshAccount(false); }).catch(function () {});
     window.addEventListener('storage', function (event) { if (event.key === 'cgi-auth-update') authenticated.then(function () { refreshAccount(true); }); });
     window.addEventListener('focus', function () { authenticated.then(function () { refreshAccount(true); }); });
     window.addEventListener('pageshow', function (event) { if (event.persisted && authState === 'redirect') { cancelSignIn(); refreshAccount(true); } });
@@ -588,6 +592,10 @@
     var sharedActive = false, deferredOwnResult = null, sharedFromAccount = false;
     var sharedOwner = mode === 'daily' ? query.get('p') : '';
     var busy = false;  // one vote at a time: a fast double gesture can't spend two tickets
+    // The deck is picked once a page load. Until then a card written into the page is an empty frame
+    // (.deck[data-pending]) and can't be voted on; shown() ends that.
+    var picked = false;
+    function shown() { deck.removeAttribute('data-pending'); }
 
     // localStorage can be missing or throw (a private window): then the page simply draws new pairs.
     function remember(key, value) { try { window.localStorage.setItem(key, value); } catch (e) { /* not kept */ } }
@@ -693,7 +701,7 @@
     // one). Returns false if nothing was sent.
     function choose(choice, card, fromRelease) {
         card = card || top();
-        if (!card || !card.querySelector('[data-choice]') || card !== top() || busy || !modal.hidden) return false;
+        if (!card || !card.querySelector('[data-choice]') || card !== top() || busy || !modal.hidden || deck.hasAttribute('data-pending')) return false;
         if (!fromRelease) clearGlow();  // keyboard/buttons reset feedback; a released swipe keeps its fade
         busy = true;
         var body = new URLSearchParams({ matchup: card.dataset.token });
@@ -734,6 +742,7 @@
 
     var staticLoad = 0;
     function load(first) {
+        picked = true;
         if (staticClient) {
             var request = ++staticLoad;
             return staticClient.load(mode,day,seed,query.get('p')).then(function (html) {
@@ -753,9 +762,11 @@
                         history.replaceState(null,'',home+'daily-10/?'+query+location.hash);
                     }
                 }
-                deck.innerHTML = ''; take(html); hint();
+                deck.innerHTML = ''; take(html); shown(); hint();
             }).catch(function () {  // say which thing failed: a link to a pair that doesn't exist, a day that is gone, or no connection
-                if (top()) return;
+                if (request !== staticLoad) return;
+                if (top() && !deck.hasAttribute('data-pending')) return;
+                shown();
                 var note = document.createElement('p'); note.className = 'note';
                 note.textContent = navigator.onLine === false ? "You're offline, and this page has no saved cards. Reconnect and reload."
                     : mode === 'pair' ? 'This link doesn’t lead to a matchup. Try Random or today’s Daily 10.'
@@ -787,8 +798,8 @@
                     sharedNotice("You already started this day's Daily 10. Continue with your original set.", 'Continue your Daily 10');
                     return load();
                 }
-                deck.innerHTML = ''; take(html); hint();
-            }, function () { if (!top()) deck.innerHTML = offline(); });
+                deck.innerHTML = ''; take(html); shown(); hint();
+            }, function () { if (!top() || deck.hasAttribute('data-pending')) deck.innerHTML = offline(); shown(); });
     }
 
     // Once per browser: wiggle the card and drop a ballot on both sides, to show what the page does.
@@ -1009,12 +1020,16 @@
         choose(choice);
     });
 
+    // A signed-in page waits for the account read (1.5 s at most) before its one pick, so the pick already leaves
+    // out what the account voted on elsewhere and continues the account's Daily 10. A signed-out page picks at once.
+    var firstPick = !staticClient || !(sessionToken() || returningToAccount) ? Promise.resolve()
+        : Promise.race([accountKnown, new Promise(function (resolve) { setTimeout(resolve, 1500); })]);
     function startCards() {
-        if (!sharedOwner) return load();
+        if (!sharedOwner) return firstPick.then(function () { return load(); });
         if (staticClient) {
             sharedActive = true; applyShared(null,true);
             staticClient.shared(day,sharedOwner,seed).then(function (html) { if (!sharedFromAccount) applyShared(html,!html); });
-            return load();
+            return firstPick.then(function () { return load(); });
         }
         var path = '/result?day=' + encodeURIComponent(day) + '&p=' + encodeURIComponent(sharedOwner) + (seed ? '&seed=' + encodeURIComponent(seed) : '');
         var sharedRequest = staticClient ? staticClient.shared(day,sharedOwner,seed) : send(path).then(function (response) { return response.text(); });
