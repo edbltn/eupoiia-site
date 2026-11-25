@@ -6,7 +6,9 @@
 // - daily: the Daily 10, the same cards with a progress bar, then the result in a modal.
 // - pair: a shared card first, then the Daily 10 it came from, or infinite mode.
 // - board, players, result: the tables, and a shared Daily 10 result.
-// Players sign in with email or Bluesky. The first-party sign-in cookie stays out of public snapshots and
+// Players sign in with email or Bluesky. A signed-out voter is on the leaderboard under a funny name; signing in
+// lets them pick a username (required for email, optional for Bluesky, which shows its @handle without one).
+// The first-party sign-in cookie stays out of public snapshots and
 // persistent vote queues. Static pages send credentials in form bodies; older pages retain their headers.
 // A signed-out tab has a per-tab id so its eligible votes can join the account when it signs in.
 (async function () {
@@ -163,6 +165,25 @@
     var returningToAccount = !!new URLSearchParams(location.hash.slice(1)).get('email') || (!!query.get('login') && query.get('login') !== 'failed');
     var authState = returningToAccount ? 'redirect' : 'idle', currentPlayer = null, signInProviders = [], emailForm, nameForm, inboxBox, failedSignIn;
     var returnModal = null, deferredAuthResult = false, authEpoch = 0, accountRequest = 0, dismissedName = false;
+    // A signed-out tab that has voted: {name: its funny name, votes}. The name is kept for this tab so it can be
+    // suggested as a username right after signing in.
+    var guest = null, guestLine = null, boardInvite = null, nameKind = '', nameAsked = false;
+    var usernames = window.eupoiiaUsername;
+    function funnyName() {
+        if (guest && guest.name) return guest.name;
+        try { return sessionStorage.getItem('cgi_funny') || ''; } catch (e) { return ''; }
+    }
+    function inviteLine(where) {  // "You're on the leaderboard as <funny name>. Sign in to pick a username."
+        where.replaceChildren();
+        if (guest && guest.name) {
+            var name = document.createElement('strong'); name.textContent = guest.name;
+            where.append("You're on the leaderboard as ", name, '. ');
+        }
+        if (where === guestLine) { where.append('Sign in to pick a username.'); return; }  // the buttons are just below
+        var open = document.createElement('button'); open.type = 'button'; open.className = 'text-link';
+        open.dataset.signIn = 'open'; open.textContent = 'Sign in';
+        where.append(open, ' to pick a username.');
+    }
     function menuOpen(open, focus) {
         if (!accountMenu) return;
         accountMenu.classList.toggle('is-open', open);
@@ -186,9 +207,10 @@
             if (explainer) explainer.textContent = 'Your score compares the odds when you voted with the Elo ratings at the end of the day. It can change until the day ends.';
         }
         if (card.hasAttribute('data-shared-result') || !currentPlayer) {
-            if (identity) identity.remove();
+            if (identity && !(identity.hasAttribute('data-funny-name') && !card.hasAttribute('data-shared-result'))) identity.remove();
             return;
         }
+        if (identity) identity.removeAttribute('data-funny-name');
         if (!identity) {
             identity = document.createElement('p'); identity.className = 'score-identity';
             identity.dataset.scoreIdentity = '';
@@ -215,7 +237,9 @@
             actions.hidden = !!currentPlayer || authState !== 'idle';
         });
         if (signInRow) signInRow.hidden = !!currentPlayer || authState !== 'idle' || !signInRow.childNodes.length || !!resultActions;
-        if (account) account.hidden = !currentPlayer;
+        if (guestLine) guestLine.hidden = signInRow.hidden;
+        if (boardInvite) boardInvite.hidden = !!currentPlayer || authState !== 'idle' || !(guest && guest.name) || !signInProviders.length;
+        if (account) account.hidden = !currentPlayer || authState === 'name';
         if (emailForm) emailForm.hidden = authState !== 'email';
         if (nameForm) nameForm.hidden = authState !== 'name';
         if (inboxBox) inboxBox.hidden = authState !== 'inbox';
@@ -241,8 +265,14 @@
     function formField(form, labelText, id, type, max) {
         var label = document.createElement('label'); label.htmlFor = id; label.textContent = labelText;
         var input = document.createElement('input'); input.id = id; input.name = type === 'email' ? 'email' : 'name';
-        input.type = type; input.required = true; input.maxLength = max; input.autocomplete = type === 'email' ? 'email' : 'name';
+        input.type = type; input.required = true; if (max) input.maxLength = max;
+        input.autocomplete = type === 'email' ? 'email' : 'nickname';
         form.append(label, input); return input;
+    }
+    function formNote(form, text, id) {
+        var note = document.createElement('p'); note.className = 'field-help'; note.textContent = text;
+        if (id) note.id = id;
+        form.append(note); return note;
     }
     function formButton(text, action, type) {
         var button = document.createElement('button'); button.type = type || 'button'; button.className = 'btn';
@@ -250,7 +280,10 @@
     }
     function cancelSignIn(restore) {
         ++authEpoch;
-        if (authState === 'name') dismissedName = true;
+        if (authState === 'name') {
+            dismissedName = true;
+            if (nameKind === 'offer' && currentPlayer && currentPlayer.offer_username) keepHandle().catch(function () {});  // closing it is "no, thanks"
+        }
         state(currentPlayer ? 'account' : 'idle'); menuOpen(false);
         if ((restore !== false || deferredAuthResult) && returnModal && returnModal.querySelector('.result-card')) {
             returnModal.hidden = false; authViews();
@@ -278,8 +311,8 @@
         hideResultForSignIn();
         if (!emailForm) {
             emailForm = document.createElement('form'); emailForm.className = 'email-sign-in-form';
-            var name = formField(emailForm, 'Name', 'signin-name', 'text', 40);
             var input = formField(emailForm, 'Email address', 'signin-email', 'email', 254);
+            formNote(emailForm, "We'll email you a sign-in link. If you're new, you'll pick a username next.");
             var submit = formButton('Send sign-in link', null, 'submit');
             var status = document.createElement('span'); status.setAttribute('role', 'status');
             emailForm.append(submit, formButton('Cancel', function () { cancelSignIn(); }), status);
@@ -287,36 +320,90 @@
             emailForm.addEventListener('submit', function (event) {
                 event.preventDefault(); var epoch = ++authEpoch; submit.disabled = true; status.textContent = 'Sending…';
                 var back = new URL(location.href); back.searchParams.delete('login'); back.hash = '';
-                send('/auth/email/start', { method: 'POST', body: new URLSearchParams({ email: input.value, name: name.value.trim(),
+                send('/auth/email/start', { method: 'POST', body: new URLSearchParams({ email: input.value,
                     binding: emailBinding(), session: tab, return: back.href }) })
                     .then(function (response) { if (!response.ok) throw new Error('email'); return response.json(); })
                     .then(function (answer) { if (epoch === authEpoch) showInbox(answer.message); })
-                    .catch(function () { if (epoch === authEpoch) status.textContent = 'Use a name of 1–40 characters without a URL and a valid email address, then try again.'; })
+                    .catch(function () { if (epoch === authEpoch) status.textContent = 'Enter a valid email address and try again.'; })
                     .finally(function () { submit.disabled = false; });
             });
         }
         state('email'); menuOpen(true); emailForm.querySelector('input').focus();
     }
-    function askName() {
-        if (!accountPanel) return;
+    // One username form, three uses. 'required': an email account's first (the only other way out is to sign out);
+    // 'offer': a new Bluesky account's optional one; 'change': later, from the account panel.
+    // 'decline' only stops the one-time offer; 'keep' also drops a username, so it is sent only when the player
+    // presses "Use @handle" on a username this page knows they have.
+    function keepHandle(drop) {
+        if (currentPlayer) currentPlayer.offer_username = false;
+        return send('/auth/name', { method: 'POST', body: new URLSearchParams(drop ? { keep: '1' } : { decline: '1' }) });
+    }
+    function signOut() {
+        send('/auth/logout', { method: 'POST' }).finally(function () { cookie('cgi_session', '', 0); broadcastAccount(); location.reload(); });
+    }
+    function askUsername(kind) {
+        if (!accountPanel || !currentPlayer || !usernames) return;
         hideResultForSignIn();
-        if (!nameForm) {
-            nameForm = document.createElement('form'); nameForm.className = 'email-sign-in-form name-sign-in-form';
-            var input = formField(nameForm, 'Name', 'account-name', 'text', 40);
-            var status = document.createElement('span'); status.setAttribute('role', 'status');
-            var submit = formButton('Save name', null, 'submit');
-            nameForm.append(submit, formButton('Cancel', function () { cancelSignIn(); }), status);
-            accountPanel.append(nameForm);
-            nameForm.addEventListener('submit', function (event) {
-                event.preventDefault(); submit.disabled = true;
-                send('/auth/name', { method: 'POST', body: new URLSearchParams({ name: input.value.trim() }) })
-                    .then(function (response) { if (!response.ok) throw new Error('name'); return response.json(); })
-                    .then(function () { broadcastAccount(); location.reload(); })
-                    .catch(function () { status.textContent = 'Use a name of 1–40 characters without a URL.'; })
-                    .finally(function () { submit.disabled = false; });
-            });
+        if (nameForm) nameForm.remove();
+        nameKind = kind; nameAsked = false;
+        var bluesky = currentPlayer.provider === 'bluesky', handle = currentPlayer.bluesky_handle || '';
+        nameForm = document.createElement('form'); nameForm.className = 'email-sign-in-form name-sign-in-form'; nameForm.noValidate = true;
+        if (kind === 'required') formNote(nameForm, "You're signed in. Pick a username to finish.").className = 'form-lead';
+        else if (kind === 'offer') formNote(nameForm, "You're signed in as " + handle + ". Pick a username if you'd like one.").className = 'form-lead';
+        var input = formField(nameForm, 'Username', 'account-username', 'text');
+        input.autocapitalize = 'none'; input.spellcheck = false; input.setAttribute('autocorrect', 'off');
+        input.setAttribute('aria-describedby', 'account-username-help account-username-status');
+        formNote(nameForm, usernames.helper, 'account-username-help');
+        var status = document.createElement('p'); status.className = 'field-status'; status.id = 'account-username-status';
+        status.setAttribute('role', 'status'); nameForm.append(status);
+        var submit = formButton('Save username', null, 'submit'); nameForm.append(submit);
+        if (kind === 'required') nameForm.append(formButton('Sign out', signOut));
+        else {
+            if (bluesky && (kind === 'offer' || currentPlayer.chosen)) {
+                nameForm.append(formButton((currentPlayer.chosen ? 'Use ' : 'Keep ') + handle, function () {
+                    var had = currentPlayer.chosen;
+                    keepHandle(!!had).then(function () { if (had) { broadcastAccount(); location.reload(); } }, function () {});
+                    nameKind = ''; if (!had) cancelSignIn();
+                }));
+            }
+            if (kind === 'change') nameForm.append(formButton('Cancel', function () { cancelSignIn(); }));
         }
-        state('name'); menuOpen(true); nameForm.querySelector('input').focus();
+        accountPanel.append(nameForm);
+        var checking = 0, timer = null;
+        function say(text, bad) { status.textContent = text; input.setAttribute('aria-invalid', bad ? 'true' : 'false'); }
+        // The same rule the server applies, at once; then, after a pause in typing, whether the name is free.
+        function look() {
+            var request = ++checking; clearTimeout(timer);
+            if (!input.value.trim()) { say('', false); return; }
+            var local = usernames.check(input.value);
+            if (!local.ok) { say(local.message, true); return; }
+            if (currentPlayer.chosen && local.name === currentPlayer.chosen) { say('This is your username now.', false); return; }
+            say('Checking…', false);
+            timer = setTimeout(function () {
+                send('/auth/username/check', { method: 'POST', body: new URLSearchParams({ name: local.name }) })
+                    .then(function (response) { return response.json(); })
+                    .then(function (answer) { if (request === checking) say(answer.ok ? 'Available.' : answer.message || "That username isn't available.", !answer.ok); })
+                    .catch(function () { if (request === checking) say('', false); });  // saving still checks
+            }, 300);
+        }
+        input.addEventListener('input', look);
+        nameForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var local = usernames.check(input.value);
+            if (!local.ok) { ++checking; clearTimeout(timer); say(local.message, true); input.focus(); return; }
+            ++checking; clearTimeout(timer); submit.disabled = true;
+            send('/auth/name', { method: 'POST', body: new URLSearchParams({ name: local.name }) })
+                .then(function (response) { return response.json().then(function (answer) { return { ok: response.ok, answer: answer }; }, function () { return { ok: false, answer: {} }; }); })
+                .then(function (saved) {
+                    if (saved.ok) { broadcastAccount(); location.reload(); return; }
+                    say(saved.answer.message || "That didn't save. Try again.", true); input.focus();
+                })
+                .catch(function () { say("That didn't save. Try again.", true); })
+                .finally(function () { submit.disabled = false; });
+        });
+        // Their funny name as a starting point; a username they already have when changing it.
+        input.value = kind === 'change' ? currentPlayer.chosen || '' : currentPlayer.suggested || usernames.suggest(funnyName());
+        state('name'); menuOpen(true); input.focus(); input.select(); look();
     }
     function signInLink(provider) {
         return api + '/auth/' + provider + '/start?session=' + encodeURIComponent(tab) + '&return=' + encodeURIComponent(location.href.split('?')[0] + location.search.replace(/[?&]login=[^&]*/, ''));
@@ -377,8 +464,16 @@
                 var img = document.createElement('img'); img.src = currentPlayer.avatar; img.alt = ''; img.className = 'avatar'; img.referrerPolicy = 'no-referrer'; account.append(img);
             }
             var who = document.createElement('span'); who.className = 'account-name'; who.textContent = publicName(currentPlayer) ? 'Signed in as ' + publicName(currentPlayer) : 'Signed in'; who.title = publicName(currentPlayer);
-            account.append(who, formButton('Sign out', function () {}, 'button')); account.lastChild.className = 'sign-out';
-            if (authState !== 'error') state('account');
+            if (!provisional && usernames && currentPlayer.provider) {
+                var change = formButton(currentPlayer.chosen ? 'Change username' : 'Pick a username',
+                    function () { askUsername(currentPlayer.needs_name ? 'required' : currentPlayer.chosen || currentPlayer.provider !== 'bluesky' ? 'change' : 'offer'); });
+                change.className = 'change-name'; account.append(who, change);
+            } else account.append(who);
+            account.append(formButton('Sign out', function () {}, 'button')); account.lastChild.className = 'sign-out';
+            guest = null;
+            // A username being typed stays open, unless the page asked for it and another tab has answered since.
+            if (authState === 'name' && nameAsked && !provisional && !currentPlayer.needs_name && !currentPlayer.offer_username) { nameAsked = false; state('account'); }
+            if (authState !== 'error' && authState !== 'name') state('account');
             if (accountToggle) {
                 accountToggle.replaceChildren(); accountToggle.setAttribute('aria-label', publicName(currentPlayer) ? 'Account: ' + publicName(currentPlayer) : 'Account');
                 if (currentPlayer.avatar) {
@@ -387,7 +482,10 @@
                 var label = document.createElement('span'); label.className = 'account-label';
                 label.textContent = publicName(currentPlayer); label.title = publicName(currentPlayer); accountToggle.append(label);
             }
-            if (!provisional && currentPlayer.needs_name && !dismissedName) askName();
+            if (!provisional && !dismissedName && authState !== 'name') {
+                if (currentPlayer.needs_name) { askUsername('required'); nameAsked = true; }
+                else if (currentPlayer.offer_username) { askUsername('offer'); nameAsked = true; }
+            }
         } else {
             if (!provisional && (prior || authState === 'redirect')) state('idle');
             if (accountToggle) {
@@ -395,6 +493,14 @@
                 if (accountIcon) accountToggle.append(accountIcon.cloneNode(true));
                 var label = document.createElement('span'); label.className = 'account-label'; label.textContent = 'Sign in'; accountToggle.append(label);
             }
+            guest = me.guest || guest;
+            if (guest && guest.name) { try { sessionStorage.setItem('cgi_funny', guest.name); } catch (e) {} }
+            if (signInRow && !guestLine) {
+                guestLine = document.createElement('p'); guestLine.className = 'guest-line';
+                signInRow.insertAdjacentElement('beforebegin', guestLine);
+            }
+            if (guestLine) inviteLine(guestLine);
+            if (boardInvite) inviteLine(boardInvite);
             signInProviders.forEach(function (p) {
                 if (p.name === 'bluesky') signInRow.append(blueskyButton('Sign in with Bluesky'));
                 else if (p.name === 'email') {
@@ -418,6 +524,9 @@
         failedSignIn.dataset.provider = provider || '';
         failedSignIn.querySelector('[role="status"]').textContent = message;
         state('error'); retrySignIn(); menuOpen(true);
+    }
+    function learnFunnyName() {  // after a signed-out tab's first vote, ask once what name it is listed under
+        if (!currentPlayer && !(guest && guest.name) && !sessionToken()) refreshAccount(false);
     }
     function refreshAccount(reactive) {
         var request = ++accountRequest, prior = currentPlayer, requestToken = sessionToken();
@@ -448,7 +557,8 @@
                 });
             }
             if (reactive && ((prior && prior.handle) !== (next && next.handle) ||
-                (prior && prior.name) !== (next && next.name) || (prior && prior.needs_name) !== (next && next.needs_name))) location.reload();
+                (prior && prior.name) !== (next && next.name) || (prior && prior.needs_name) !== (next && next.needs_name))
+                && authState !== 'name') location.reload();
             return known;
         }, function () {});
     }
@@ -505,13 +615,13 @@
         if (accountToggle && accountToggle.contains(event.target)) {
             menuOpen(!accountMenu.classList.contains('is-open')); return;
         }
-        if (accountMenu && accountMenu.classList.contains('is-open') && !accountMenu.contains(event.target) && !prompt) cancelSignIn(false);
-        if (event.target.closest('.sign-out')) {
-            send('/auth/logout', { method: 'POST' }).finally(function () { cookie('cgi_session', '', 0); broadcastAccount(); location.reload(); });
-        }
+        // A click elsewhere closes the panel; a result that made way for it comes back.
+        if (accountMenu && accountMenu.classList.contains('is-open') && !accountMenu.contains(event.target) && !prompt) cancelSignIn(returnModal ? undefined : false);
+        if (event.target.closest('.sign-out')) signOut();
         if (prompt) {
             event.preventDefault();
-            if (prompt.dataset.signIn === 'email') emailSignIn();
+            if (prompt.dataset.signIn === 'open') { hideResultForSignIn(); state('idle'); menuOpen(true, true); }  // "Sign in to pick a username."
+            else if (prompt.dataset.signIn === 'email') emailSignIn();
             else if (prompt.dataset.signIn === 'bluesky') { hideResultForSignIn(); state('redirect'); location.href = signInLink('bluesky'); }
         }
     });
@@ -522,6 +632,7 @@
             bootstrap:bootstrapNode ? JSON.parse(bootstrapNode.textContent) : null, home:home, tab:tab, token:sessionToken, send:send,
             refresh:function () { refreshAccount(false); }, notice:staticNotice,
             saved:function (answer) {
+                learnFunnyName();
                 if (!deck) return;
                 if (answer.counted_html) result.innerHTML = answer.counted_html;
                 var state = staticClient.state();
@@ -564,6 +675,8 @@
     }
     if (mode === 'players') {  // the Players table: Today or All time
         var box = game.querySelector('.board-box'), boardRequest = 0;
+        boardInvite = document.createElement('p'); boardInvite.className = 'sign-in-invite'; boardInvite.hidden = true;
+        box.insertAdjacentElement('beforebegin', boardInvite); inviteLine(boardInvite); authViews();
         var showBoard = function (which) {
             game.querySelectorAll('[data-board]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.board === which); });
             var request = ++boardRequest;
@@ -732,6 +845,7 @@
                 return response.text().then(function (html) {
                     busy = false;  // before the next card shows, so a quick tap on it counts
                     take(html);
+                    if (choice !== 'skip' && response.ok) learnFunnyName();
                     if (mode === 'pair') { mode = 'infinite'; return load(); }  // a shared card, then infinite mode
                 });
             })

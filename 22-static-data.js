@@ -13,6 +13,7 @@
     function create(options) {
         var base = options.base, fallback = options.fallback, memory = new Map(), bootstrap = options.bootstrap;
         var owner = null, identityVersion = 0, serverDaily = null, dailyData = null, dailyState = null;
+        var boardKey = null;  // the caller's own Players row: an account's, or a signed-out tab's under its funny name
         var pool = [], poolLoaded = false, template = '', selectedDay = '', selectedSeed = '', sharedPair = false;
         var seen = new Set(), paused = false, flushing = false, timer = null, meContext = {}, playerBoards = null;
         var QUEUE = 'eupoiia-vote-queue-v1', attempts = 0, boardUpdate = null;
@@ -155,6 +156,7 @@
             keep(seenKey(), Array.from(seen));
             if (me.daily && me.daily.seed) setDaily(me.daily);
             if (me.board_key && owner) owner.board_key = me.board_key;
+            boardKey = me.board_key || null;
             if (boardUpdate) boardUpdate();
             flush(); return changed;
             });
@@ -320,13 +322,13 @@
             page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
             var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num wide">Foresight</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
-                html += '<tr' + (players && owner && row.key === owner.board_key ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
+                html += '<tr' + (players && boardKey && row.key === boardKey ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
                 if (players) html += escape(row.name);
                 else html += '<a href="?c=' + encodeURIComponent(row.qid) + '">' + escape(row.name) + '</a>';
                 html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num wide">' + (row.foresight == null ? '—' : Math.round(row.foresight)) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
             });
             if (!shown.length) html += '<tr><td colspan="' + (players ? (votesColumn ? 4 : 3) : 5) + '">' + (searching ? 'No matching names.'
-                : !players ? 'No votes yet.' : view === 'today' ? "No signed-in player has voted on today's Daily 10 yet." : 'No signed-in player has voted yet.') + '</td></tr>';
+                : !players ? 'No votes yet.' : view === 'today' ? "No one has voted on today's Daily 10 yet." : 'No one has voted yet.') + '</td></tr>';
             html += '</tbody></table>';
             if (all > limit) html += '<nav class="pagination" aria-label="Leaderboard pages"><button type="button" data-static-page="' + Math.max(1, page - 1) + '"' + (page <= 1 ? ' disabled' : '') + '>Previous</button><span>Page ' + page + ' of ' + Math.ceil(all / limit) + '</span><button type="button" data-static-page="' + (page + 1) + '"' + (page * limit >= all ? ' disabled' : '') + '>Next</button></nav>';
             mount.innerHTML = html;
