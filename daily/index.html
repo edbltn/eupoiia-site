@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=9f5ea53a" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=7a67d877" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=9f5ea53a">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=7a67d877">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -252,7 +252,11 @@
                  justify-content: center; overflow-y: auto; padding: 1.5rem 0.8rem; }
         .modal[hidden] { display: none; }
         .modal-box { position: relative; background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; max-width: 36rem; width: 100%; padding: 1.4rem 1.2rem; }
-        .modal-close { position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; outline-offset: -4px; font: inherit; font-size: 1.6rem; line-height: 1; background: none; border: 0; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
+        .modal-close { position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: none; border: 0; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
+        .modal-close svg { width: 18px; height: 18px; display: block; }
+        .modal-close:focus { outline: none; }
+        .modal-close:focus-visible { outline: 2px solid var(--ink); outline-offset: -6px; }
+        .modal-box:focus { outline: none; }
         .result-card { text-align: center; }
         .result-card > .note:first-child, .result-card > .score-identity { padding: 0 2.6rem; }  /* clear of the close button */
         .result-card .score-identity { display: flex; align-items: center; justify-content: center; gap: 0.45rem;
@@ -413,12 +417,27 @@
         #name-info-text .ety { font-size: 0.82rem; color: var(--ink-soft); }
         #name-info-text ol { margin: 0 0 0.4rem; padding-left: 1.2rem; } #name-info-text li { margin: 0; }
         #name-info-text [lang="grc"] { font-family: var(--serif), "Palatino", "Times New Roman", "Gentium Plus", serif; }
-        /* On a phone the header has no spare width: the icon hangs off the title's right edge instead of adding to it. */
+        /* Below desktop width the right side is the account button's (a picture and a name when signed in), so the icon
+           sits left of the logo instead. Its tap area is 44 px across whatever its drawn size. */
+        @media (max-width: 767px) { .header-tools .theme-toggle::after { inset: -7px; } }
+        @media (min-width: 541px) and (max-width: 767px) {
+            .masthead-brand { --logo-w: 52px; }
+            #name-info { left: auto; right: calc(100% + var(--brand-gap) + var(--logo-w) + 0.35rem); margin: 0; }
+            #name-info::after { inset: calc((1.6rem - 44px) / 2); }
+        }
         @media (max-width: 540px) {
-            /* The right side is the account button's, so on a phone the icon sits left of the logo instead. */
             #name-info { left: auto; right: calc(100% + var(--brand-gap) + var(--logo-w) + 0.15rem); margin: 0; width: 1.3rem; height: 1.3rem; }
-            #name-info::after { inset: -5px; }
+            #name-info::after { inset: calc((1.3rem - 44px) / 2); }
             #name-info svg { width: 0.9rem; height: 0.9rem; }
+        }
+        /* On a phone the tabs are two short lines the size of the text around them. Each link still takes a 44 px tap:
+           the top line's reaches up into the space above the tabs, the bottom line's down into the space below. */
+        @media (max-width: 540px) {
+            .tab-group { padding-bottom: 0.3rem; }
+            .tab { box-sizing: border-box; padding-top: 12px; margin-top: -12px; font-size: 1rem; }
+            .sub-tabs { min-height: 32px; margin-top: 0; }
+            .sub-tabs a { box-sizing: border-box; padding-bottom: 12px; margin-bottom: -12px; }
+            .sub-tabs a[aria-current="page"]::after { top: calc(16px + 0.9em); }
         }
         .how p:last-child { margin-bottom: 0; }
         @media (max-width: 1023px) { .header-tools { min-height: 44px; } }
@@ -431,7 +450,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=9f5ea53a" alt="" class="logo">
+                <img src="/mark.svg?v=7a67d877" alt="" class="logo">
                 <div class="brand-name">
                     <h1><a href="/">Eupoiia Index</a></h1>
                     <button type="button" id="name-info" aria-label="What does Eupoiia mean?" aria-describedby="name-info-text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>
@@ -490,7 +509,7 @@
             
         </div>
         <div class="modal" hidden role="dialog" aria-modal="true" aria-label="Your Daily 10">
-            <div class="modal-box"><button type="button" class="modal-close" aria-label="Close">×</button><div class="modal-body"></div></div>
+            <div class="modal-box" tabindex="-1"><button type="button" class="modal-close" aria-label="Close"><svg viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path d="M3 3l12 12M15 3L3 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button><div class="modal-body"></div></div>
         </div>
         <noscript><p class="note">This page needs JavaScript to fetch the matchups.</p></noscript>
 
@@ -579,10 +598,10 @@
         })();
     </script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795552483,"catalog":["catalog-00-f7bda69dc83165f0.json","catalog-01-88b6b389697c8d64.json","catalog-02-1080a44d0a71c5ec.json","catalog-03-bbc8bead667a80c0.json","catalog-04-6d19e330be49ccee.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-56b22dd098186afa.json","catalog-10-8f264f86aa01ed8f.json","catalog-11-e560cd00c34a29df.json","catalog-12-4982aed66f5e3864.json","catalog-13-5c11e26929a713ad.json","catalog-14-feedf086db05ee7a.json","catalog-15-86d9a2afd2ef26bf.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-c2168d2d73b3818b.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-b840629a9a95147c.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-08cb41b296990e5f.json","catalog-25-c66afb95f9e2ce00.json","catalog-26-cd12b3453bc7c562.json","catalog-27-285b17e86e68d59f.json","catalog-28-484331a9c34422d7.json","catalog-29-83c30be4d6c5b421.json","catalog-30-c06eff8e31075ad6.json","catalog-31-b922803c3742d832.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json"},"files":{"contenders":"contenders-8766f734c00c4672.json","deck_first":"deck-first-3558b48611068d4e.json","deck_pool":"deck-pool-788d9cc7bb75868f.json","players_all":"players-all-38f0a533f26d366d.json","players_today":"players-today-5d43108566c994df.json","top":"top-7e719850939807c8.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-cda5630fe1f1c843.json","2026-11-19":"results-2026-11-19-409885bf35f243aa.json","2026-11-20":"results-2026-11-20-675612da89ffc980.json","2026-11-21":"results-2026-11-21-089a3f163a845f9f.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json"},"revision":778494,"today":"2026-11-24","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=9f5ea53a"></script>
-    <script defer src="/25-search-the-boards.js?v=9f5ea53a"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795630979,"catalog":["catalog-00-56d8a3cbb8118fdb.json","catalog-01-b2ae99cab6a5d720.json","catalog-02-cc8607a41cb689ab.json","catalog-03-bbc8bead667a80c0.json","catalog-04-9b84e78923f5a7b9.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-71fb96cbc2f73e19.json","catalog-10-20a327221cee47bc.json","catalog-11-a331cdf3ff2ea3b2.json","catalog-12-844f9d59b6e7e991.json","catalog-13-131c10c6da91847b.json","catalog-14-ec38368259f364a4.json","catalog-15-c4293c8096c5dc78.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-13892a3cb2767bdc.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-0579cc9c410b56d0.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-5d582ef7635d075d.json","catalog-25-96030234dadd4945.json","catalog-26-cce8a9dad4ed9d49.json","catalog-27-df93c4b517b3edf2.json","catalog-28-6d5b402b3d328e06.json","catalog-29-83c30be4d6c5b421.json","catalog-30-032837ca6687581f.json","catalog-31-f31cf70742519cff.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json","2026-11-26":"daily-2026-11-26-4e9610be573d2bc8.json"},"files":{"contenders":"contenders-5872ed989e0d07ac.json","deck_first":"deck-first-7773cd08a8c6d301.json","deck_pool":"deck-pool-bd081988a16f385c.json","players_all":"players-all-e91d30d9ade8be5d.json","players_today":"players-today-33c5aea6606221e3.json","top":"top-1e7d609f87fe6c59.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-ce85fc9e43ccbdb0.json","2026-11-19":"results-2026-11-19-ad34b01c66aac4d4.json","2026-11-20":"results-2026-11-20-09e6497323e910fa.json","2026-11-21":"results-2026-11-21-9309c8d42490e026.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json","2026-11-25":"results-2026-11-25-49b53401bdc65c8b.json"},"revision":871332,"today":"2026-11-25","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=7a67d877"></script>
+    <script defer src="/25-search-the-boards.js?v=7a67d877"></script>
     
-    <script defer src="/20-play-the-cards.js?v=9f5ea53a"></script>
+    <script defer src="/20-play-the-cards.js?v=7a67d877"></script>
 </body>
 </html>

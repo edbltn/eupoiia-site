@@ -318,12 +318,12 @@
         // One more number column goes in the two places below marked 'columns'; a long heading takes class "num wide".
         function rowsTable(rows, players, mount, page, view, searching) {
             page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
-            var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num">Score</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
+            var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num wide">Foresight</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
                 html += '<tr' + (players && owner && row.key === owner.board_key ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
                 if (players) html += escape(row.name);
                 else html += '<a href="?c=' + encodeURIComponent(row.qid) + '">' + escape(row.name) + '</a>';
-                html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num">' + Number(row.mean * 100).toFixed(2) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
+                html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num wide">' + (row.foresight == null ? '—' : Math.round(row.foresight)) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
             });
             if (!shown.length) html += '<tr><td colspan="' + (players ? (votesColumn ? 4 : 3) : 5) + '">' + (searching ? 'No matching names.'
                 : !players ? 'No votes yet.' : view === 'today' ? "No signed-in player has voted on today's Daily 10 yet." : 'No signed-in player has voted yet.') + '</td></tr>';

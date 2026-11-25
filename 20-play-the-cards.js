@@ -183,7 +183,7 @@
         var identity = card.querySelector('[data-score-identity]');
         if (!card.hasAttribute('data-shared-result')) {
             var explainer = card.querySelector('.score-explainer');
-            if (explainer) explainer.textContent = 'Your votes are recalculated using current Elo ratings. Your score can change as those ratings change.';
+            if (explainer) explainer.textContent = 'Your score compares the odds when you voted with the Elo ratings at the end of the day. It can change until the day ends.';
         }
         if (card.hasAttribute('data-shared-result') || !currentPlayer) {
             if (identity) identity.remove();
@@ -254,7 +254,7 @@
         state(currentPlayer ? 'account' : 'idle'); menuOpen(false);
         if ((restore !== false || deferredAuthResult) && returnModal && returnModal.querySelector('.result-card')) {
             returnModal.hidden = false; authViews();
-            var first = returnModal.querySelector('[data-sign-in], .modal-close'); if (first) first.focus();
+            var first = returnModal.querySelector('[data-sign-in]') || returnModal.querySelector('.modal-box'); if (first) first.focus({ preventScroll: true });
         } else if (restore !== false && accountToggle && accountToggle.offsetParent) accountToggle.focus();
         returnModal = null; deferredAuthResult = false;
     }
@@ -626,7 +626,7 @@
         modal.querySelector('.modal-body').appendChild(card);
         modal.hidden = ['email', 'name', 'inbox', 'error', 'redirect'].includes(authState);
         if (modal.hidden) { returnModal = modal; deferredAuthResult = true; }
-        else modal.querySelector('.modal-close').focus();
+        else modal.querySelector('.modal-box').focus({ preventScroll: true });
         authViews();
     }
     function applyShared(html, waiting) {
@@ -653,7 +653,7 @@
         modal.querySelector('.modal-body').appendChild(card);
         modal.hidden = ['email', 'name', 'inbox', 'error', 'redirect'].includes(authState);
         if (modal.hidden) { returnModal = modal; deferredAuthResult = true; }
-        else modal.querySelector('.modal-close').focus();
+        else modal.querySelector('.modal-box').focus({ preventScroll: true });
         authViews();
         showProgress(10);
         if (!top()) deck.innerHTML = '<p class="note">Done for this day.</p>';
