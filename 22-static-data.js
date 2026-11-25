@@ -223,6 +223,12 @@
                 }).join('') + (!remaining.length ? '<p class="note">Saving your Daily 10 result…</p>' : '');
             });
         }
+        // A heading is the name with the (i) glued to its last word (or its last 6 letters when that word is over 9 long); see 32-draw-the-name-info.html.
+        function setHeading(h3, name) {
+            var button = h3.querySelector('.info'), last = name.split(' ').pop(), tail = last.length <= 9 ? last : last.slice(-6), span = document.createElement('span');
+            span.className = 'name-last'; span.append(tail, button);
+            h3.replaceChildren(name.slice(0, name.length - tail.length), span);
+        }
         function renderPair(a, b, records) {
             var box = document.createElement('div'); box.innerHTML = template;
             var article = box.querySelector('.card'); if (!article) throw new Error('no card template');
@@ -231,11 +237,33 @@
             [a, b].forEach(function (qid, index) {
                 var c = records[qid], half = article.querySelector('.half-' + (index ? 'b' : 'a'));
                 half.dataset.qid = qid; half.dataset.name = c.name;
-                half.querySelector('h3').textContent = c.name; half.querySelector('.gist').textContent = c.description;
-                var more = half.querySelector('.more-line'); more.innerHTML = '<details class="sec more"><summary><span><span class="when-closed">Read more</span><span class="when-open">Collapse</span></span><a class="source" target="_blank" rel="noopener"></a></summary><div class="intro"><p></p><p class="from"></p></div></details>';
-                var source = more.querySelector('.source'); source.href = c.wikipedia_url; source.textContent = c.wikipedia_url.includes('wikipedia.org/') ? 'Wikipedia' : 'Website';
-                more.querySelector('.intro > p').textContent = c.intro || c.description;
-                more.querySelector('.from').textContent = 'From ' + new URL(c.wikipedia_url).hostname + (c.wikipedia_url.includes('wikipedia.org/') ? ', CC BY-SA' : '');
+                setHeading(half.querySelector('h3'), c.name); half.querySelector('.gist').textContent = c.description;
+                var infoButton_ = half.querySelector('h3 .info'); infoButton_.setAttribute('aria-label', 'About ' + c.name); infoButton_.dataset.infoFor = qid;
+                var info = half.querySelector('.name-line .info-text'); info.hidden = true; info.innerHTML = c.info_html || '';
+                var more = half.querySelector('.more-line'), wiki = c.wikipedia_url.includes('wikipedia.org/'), picture_file = c.image_file;
+                var entity = /^Q[0-9]+$/.test(qid) ? 'https://www.wikidata.org/wiki/' + qid : '';
+                var credit = !picture_file ? '' : picture_file.includes('/') ? c.wikipedia_url : 'https://en.wikipedia.org/wiki/File:' + encodeURIComponent(picture_file);
+                more.replaceChildren();
+                if (c.intro) {
+                    more.innerHTML = '<details class="sec more"><summary><span><span class="when-closed">Read more</span><span class="when-open">Collapse</span></span><a class="source" target="_blank" rel="noopener"></a></summary><div class="intro"></div></details>';
+                    var source = more.querySelector('.source'); source.href = c.wikipedia_url; source.textContent = wiki ? 'Wikipedia' : 'Website';
+                    var intro = more.querySelector('.intro');
+                    c.intro.split('\n').filter(function (line) { return line.trim(); }).forEach(function (line) { var p = document.createElement('p'); p.textContent = line.trim().replace(/(\d)\s?[-—]\s?(c\. )?(\d)/g, '$1–$2$3'); intro.append(p); });
+                    function link(href, text) { var a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = text; return a; }
+                    var from = document.createElement('p'); from.className = 'from';
+                    if (wiki) from.append('From ', link(c.wikipedia_url, 'Wikipedia'), ', CC BY-SA. ', link(c.wikipedia_url, 'Read the full article'), '.');
+                    else from.append('From ', link(c.wikipedia_url, new URL(c.wikipedia_url).hostname));
+                    intro.append(from);
+                    if (entity || credit) {
+                        var sources = document.createElement('p'); sources.className = 'from'; sources.append('Sources: ');
+                        if (entity) sources.append('the one-line description is from ', link(entity, 'Wikidata'), credit ? '; ' : '');
+                        if (credit) sources.append('the picture\'s author and license are on ', link(credit, 'its file page'));
+                        sources.append('.'); intro.append(sources);
+                    }
+                } else {
+                    var only = document.createElement('a'); only.className = 'source'; only.href = c.wikipedia_url; only.target = '_blank'; only.rel = 'noopener';
+                    only.textContent = wiki ? 'Wikipedia' : 'Website'; more.append(only);
+                }
                 var picture = half.querySelector('.picture'); if (picture) picture.remove();
                 if (records[a].image_file && records[b].image_file) {
                     picture = document.createElement('a'); picture.className = 'picture'; picture.target = '_blank'; picture.rel = 'noopener'; picture.draggable = false;
@@ -318,13 +346,23 @@
             }).catch(function () { return null; });
         }
         // One more number column goes in the two places below marked 'columns'; a long heading takes class "num wide".
+        // The (i) beside a board row's name; its text is the catalog's info_html, fetched the first time it is opened.
+        function rowName(row) {
+            var name = String(row.name), last = name.split(' ').pop(), tail = last.length <= 9 ? last : last.slice(-6), head = name.slice(0, name.length - tail.length);
+            var href = '?c=' + encodeURIComponent(row.qid), label = escape(name).replace(/"/g, '&quot;');
+            return (head ? '<a href="' + href + '" aria-label="' + label + '">' + escape(head) + '</a>' : '') + '<span class="name-last"><a href="' + href + '"' + (head ? ' tabindex="-1" aria-hidden="true"' : '') + '>' + escape(tail) + '</a>' + infoButton(row) + '</span><div class="info-text" role="tooltip" hidden data-lazy></div>';
+        }
+        function infoButton(row) {
+            return '<button type="button" class="info" aria-label="About ' + escape(row.name).replace(/"/g, '&quot;') + '" aria-expanded="false" data-info-for="' + escape(row.qid).replace(/"/g, '&quot;') + '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>';
+        }
+        if (window.eupoiiaPopover) window.eupoiiaPopover.provide = function (button) { return catalog(button.dataset.infoFor).then(function (row) { return row && row.info_html || ''; }); };
         function rowsTable(rows, players, mount, page, view, searching) {
             page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
             var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num wide">Foresight</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
                 html += '<tr' + (players && boardKey && row.key === boardKey ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
                 if (players) html += escape(row.name);
-                else html += '<a href="?c=' + encodeURIComponent(row.qid) + '">' + escape(row.name) + '</a>';
+                else html += rowName(row);
                 html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num wide">' + (row.foresight == null ? '—' : Math.round(row.foresight)) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
             });
             if (!shown.length) html += '<tr><td colspan="' + (players ? (votesColumn ? 4 : 3) : 5) + '">' + (searching ? 'No matching names.'

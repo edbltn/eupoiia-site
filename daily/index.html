@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/18-domain-handoff.js?v=124698a3" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
+    <script src="/18-domain-handoff.js?v=e782875e" data-api="https://common-good-katze52zaq-uc.a.run.app" data-source="https://sphericalharmonics.org"></script>
     
     <title>A Daily 10 result · Eupoiia Index</title>
     <link rel="preload" href="/assets/fonts/lmroman12-regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
             }
         })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=124698a3">
+    <link rel="icon" type="image/svg+xml" href="/mark-small.svg?v=e782875e">
     <style>
         :root, :root[data-theme="dark"] {
             --serif: "LM Roman 12", Georgia, serif;
@@ -436,6 +436,48 @@
         #name-info-text .ety { font-size: 0.82rem; color: var(--ink-soft); }
         #name-info-text ol { margin: 0 0 0.4rem; padding-left: 1.2rem; } #name-info-text li { margin: 0; }
         #name-info-text [lang="grc"] { font-family: var(--serif), "Palatino", "Times New Roman", "Gentium Plus", serif; }
+        /* The (i) beside each name (a card's half, a leaderboard row): the header icon's look, a short version of Read more
+           in a box under it. On a card the name and the icon share a line, the name wrapping inside what is left; the box is
+           centred under the icon and kept inside the card by the popover script (--info-shift). */
+        .name-line { grid-row: 2; align-self: start; min-width: 0; margin: 0 -0.7rem; }  /* the heading borrows the half's side padding (0.7 rem) for the (i) */
+        .name-last { white-space: nowrap; }
+        .name-last button.info { width: 1rem; height: 1rem; margin: -0.5rem 0 -0.5rem 0.2rem; vertical-align: middle; }
+        .name-last button.info::after { inset: calc((1rem - 44px) / 2); }
+        .name-last button.info svg { width: 1rem; height: 1rem; }  /* inline after the last word, never taller than the line */
+        button.info { position: relative; flex: none; width: 1.6rem; height: 1.6rem; padding: 0; border: 0; background: none; color: var(--ink-soft); font: inherit;
+                      cursor: pointer; display: inline-grid; place-items: center; border-radius: 50%; vertical-align: middle; }
+        button.info::after { content: ""; position: absolute; inset: calc((1.6rem - 44px) / 2); }
+        button.info svg { width: 1.05rem; height: 1.05rem; }
+        button.info:hover, button.info:focus-visible, button.info[aria-expanded="true"] { color: var(--ink); }
+        button.info:focus-visible { outline: 1px solid var(--ink); outline-offset: 1px; }
+        .info-text { position: absolute; z-index: 30; top: 0; left: 0; display: flex; flex-direction: column; overflow: hidden;
+                     width: min(22rem, calc(100vw - 2rem)); box-sizing: border-box; margin: 0; padding: 0.7rem 0.9rem; text-align: left;
+                     font-size: var(--fs-small); font-style: normal; font-weight: 400; line-height: 1.45; color: var(--ink); background: var(--paper);
+                     border: 1px solid var(--ink); border-radius: var(--control-radius); user-select: text; -webkit-user-select: text; cursor: auto; }
+        .info-text[hidden] { display: none; }
+        .info-text p { margin: 0 0 0.4rem; } .info-text p:last-child { margin-bottom: 0; }
+        /* When there is not room for all of it, the script cuts .info-main at a whole line, with a short fade; the source line is always shown. */
+        .info-main { min-height: 0; overflow: hidden; flex: 0 1 auto; }
+        .info-main.cut { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 0.9em), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 0.9em), transparent); }
+        .info-text .from { flex: none; margin: 0.4rem 0 0; }
+        .info-text .who { font-style: italic; color: var(--ink-soft); }
+        .info-text .from { color: var(--ink-faint); }
+        .info-text a { color: inherit; font-size: inherit; text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 0.18em; }
+        .info-text a:hover { text-decoration-thickness: 1px; }
+        .info-text .info-picture { float: left; width: 3.4rem; height: 3.4rem; margin: 0.1rem 0.7rem 0.2rem 0; display: flex; align-items: center; justify-content: center; }
+        .info-text .info-picture img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .board td { position: relative; }
+        .board td button.info { margin-left: 0.15rem; }
+        .board .info-text { text-align: left; font-weight: 400; }
+        @media (max-width: 540px) {
+            /* The heading borrows the half's side padding (0.45 rem each side) and the (i), 0.8 rem with its gap, fits inside it, so a name
+               that fitted on its line before still does. The tap area is 44 px whatever the icon's size. */
+            .name-line { margin: 0 -0.45rem; }
+            .name-last button.info, button.info { width: 0.75rem; height: 0.75rem; }
+            .name-last button.info::after, button.info::after { inset: calc((0.75rem - 44px) / 2); }
+            .name-last button.info svg, button.info svg { width: 0.75rem; height: 0.75rem; }
+            .name-last button.info { margin: -0.5rem 0 -0.5rem 0.05rem; }
+        }
         /* Below desktop width the right side is the account button's (a picture and a name when signed in), so the icon
            sits left of the logo instead. Its tap area is 44 px across whatever its drawn size. */
         @media (max-width: 767px) { .header-tools .theme-toggle::after { inset: -7px; } }
@@ -469,7 +511,7 @@
     <header class="masthead">
         <div class="masthead-lockup">
             <div class="masthead-brand">
-                <img src="/mark.svg?v=124698a3" alt="" class="logo">
+                <img src="/mark.svg?v=e782875e" alt="" class="logo">
                 <div class="brand-name">
                     <h1><a href="/">Eupoiia Index</a></h1>
                     <button type="button" id="name-info" aria-label="What does Eupoiia mean?" aria-describedby="name-info-text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="0.6" fill="currentColor"/></svg></button>
@@ -579,49 +621,13 @@
             });
         })();
     </script>
-    <script>
-        // The name's definition. Hover or keyboard focus previews it; a click or tap pins it open, so its text can be
-        // selected and its links followed. A click or tap outside it, Escape, or the icon again closes it.
-        (function () {
-            var button = document.getElementById('name-info'), box = document.getElementById('name-info-text');
-            if (!button || !box) return;
-            var hovered = false, focused = false, pinned = false, dismissed = false, leaving = 0;
-            function render() {
-                var open = pinned || (!dismissed && (hovered || focused));
-                box.hidden = !open;
-                button.setAttribute('aria-expanded', open ? 'true' : 'false');
-            }
-            function close() { pinned = false; dismissed = true; hovered = false; render(); }
-            function enter(e) { if (e.pointerType !== 'mouse' || box.hidden && e.currentTarget === box) return; clearTimeout(leaving); hovered = true; if (e.currentTarget === button) dismissed = false; render(); }
-            // A short grace lets the mouse cross from the icon to the text without the preview closing.
-            function leave(e) { if (e.pointerType !== 'mouse') return; clearTimeout(leaving); leaving = setTimeout(function () { hovered = false; render(); }, 200); }
-            // The text hangs below the icon with a gap between them. While the preview is open, a mouse anywhere in the
-            // band that joins the two (the icon's width to the text's) counts as still on them, so a slow move across the gap never closes it.
-            document.addEventListener('pointermove', function (e) {
-                if (e.pointerType !== 'mouse' || box.hidden || !hovered && !leaving) return;
-                var a = button.getBoundingClientRect(), b = box.getBoundingClientRect();
-                if (e.clientY > a.bottom - 2 && e.clientY < b.top + 2 && e.clientX >= Math.min(a.left, b.left) - 6 && e.clientX <= Math.max(a.right, b.right) + 6) {
-                    clearTimeout(leaving); hovered = true; render();
-                }
-            });
-            [button, box].forEach(function (el) { el.addEventListener('pointerenter', enter); el.addEventListener('pointerleave', leave); });
-            button.addEventListener('focus', function () { focused = button.matches(':focus-visible'); dismissed = false; render(); });
-            button.addEventListener('blur', function () { focused = false; render(); });
-            button.addEventListener('click', function () {
-                if (pinned) { focused = false; close(); } else { pinned = true; dismissed = false; render(); }
-            });
-            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
-            document.addEventListener('pointerdown', function (e) {
-                if (!box.hidden && !button.contains(e.target) && !box.contains(e.target)) close();
-            });
-        })();
-    </script>
+    <script src="/16-show-a-popover.js?v=e782875e"></script>
     
-    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795634666,"catalog":["catalog-00-56d8a3cbb8118fdb.json","catalog-01-b2ae99cab6a5d720.json","catalog-02-cc8607a41cb689ab.json","catalog-03-bbc8bead667a80c0.json","catalog-04-9b84e78923f5a7b9.json","catalog-05-4ff7f5ced81e9434.json","catalog-06-d9344ffb1f24f132.json","catalog-07-0beb0b413266881a.json","catalog-08-a3288e30765b27f3.json","catalog-09-71fb96cbc2f73e19.json","catalog-10-20a327221cee47bc.json","catalog-11-a331cdf3ff2ea3b2.json","catalog-12-844f9d59b6e7e991.json","catalog-13-131c10c6da91847b.json","catalog-14-ec38368259f364a4.json","catalog-15-c4293c8096c5dc78.json","catalog-16-68a5e4c0b898d014.json","catalog-17-67320ee2dfae652c.json","catalog-18-13892a3cb2767bdc.json","catalog-19-f82cd27d2b54d3b5.json","catalog-20-8ad5f97086fe88e0.json","catalog-21-d4f586e53e3e0760.json","catalog-22-0579cc9c410b56d0.json","catalog-23-5fc1ed8de8e1204d.json","catalog-24-5d582ef7635d075d.json","catalog-25-96030234dadd4945.json","catalog-26-cce8a9dad4ed9d49.json","catalog-27-df93c4b517b3edf2.json","catalog-28-6d5b402b3d328e06.json","catalog-29-83c30be4d6c5b421.json","catalog-30-032837ca6687581f.json","catalog-31-f31cf70742519cff.json"],"daily":{"2026-11-17":"daily-2026-11-17-d9ec2d033076372e.json","2026-11-18":"daily-2026-11-18-ede94093288df6c4.json","2026-11-19":"daily-2026-11-19-7bba25d344d643f8.json","2026-11-20":"daily-2026-11-20-879fe73ad41868a7.json","2026-11-21":"daily-2026-11-21-a1d385ff798e49f3.json","2026-11-22":"daily-2026-11-22-525c47dc665c679a.json","2026-11-23":"daily-2026-11-23-dd2f318de56e9319.json","2026-11-24":"daily-2026-11-24-b2eae204ebe07f6c.json","2026-11-25":"daily-2026-11-25-6720384a882dd7df.json","2026-11-26":"daily-2026-11-26-4e9610be573d2bc8.json"},"files":{"contenders":"contenders-5872ed989e0d07ac.json","deck_first":"deck-first-2c478dfbebacd48b.json","deck_pool":"deck-pool-67c233d88166ba36.json","players_all":"players-all-432addf6b99dc0b4.json","players_today":"players-today-f6a0ba4e2d57f144.json","top":"top-2534ce9727e751a8.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-24b0643ae123ea27.json","2026-11-19":"results-2026-11-19-ad34b01c66aac4d4.json","2026-11-20":"results-2026-11-20-09e6497323e910fa.json","2026-11-21":"results-2026-11-21-bd9e93ecc639b355.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json","2026-11-25":"results-2026-11-25-7e3030d1495f6fe4.json"},"revision":886741,"today":"2026-11-25","v":1},"files":{}}</script>
-    <script defer src="/22-static-data.js?v=124698a3"></script>
-    <script defer src="/25-search-the-boards.js?v=124698a3"></script>
+    <script type="application/json" id="cgi-static-bootstrap">{"manifest":{"built_at":1795635638,"catalog":["catalog-00-ea464dbadbbe22f9.json","catalog-01-5c1487cc166a4f1e.json","catalog-02-9f00426a69fd23ac.json","catalog-03-cf9a59e9822cec90.json","catalog-04-ae445a6e73afb73f.json","catalog-05-8a24b79a4623e4c6.json","catalog-06-316a4921c77a1fef.json","catalog-07-5ee6d3aae48e277e.json","catalog-08-95aa712bbc2c8ca5.json","catalog-09-8c464095e3a86024.json","catalog-10-691c8b0caca8f84a.json","catalog-11-4312dddadec4886b.json","catalog-12-3032bac46237209b.json","catalog-13-d5eaf1beae2c8eeb.json","catalog-14-49f3fb6acd524076.json","catalog-15-2be8076349652fb1.json","catalog-16-fe448c8d000a67ce.json","catalog-17-3469eae0f0585534.json","catalog-18-fbf1a57244c4ccfa.json","catalog-19-c0377976eb4c5307.json","catalog-20-e367f3a1b94136b0.json","catalog-21-e6a5c3f28506c091.json","catalog-22-6e5f217701feb0ec.json","catalog-23-fb2c260d82b2b7f9.json","catalog-24-9df945386abb3193.json","catalog-25-bf1f2774c84edaa8.json","catalog-26-1708707bda8635be.json","catalog-27-bedfe48b46050e99.json","catalog-28-94eaf2e846c8d91a.json","catalog-29-f2b32b88a5cbdfca.json","catalog-30-b07799585408d25a.json","catalog-31-60ef27d42416bfdf.json"],"daily":{"2026-11-17":"daily-2026-11-17-9d6f4fa0d98e72b3.json","2026-11-18":"daily-2026-11-18-e816edd5af7c1463.json","2026-11-19":"daily-2026-11-19-ce6bb5fac5df9743.json","2026-11-20":"daily-2026-11-20-7271dcd847c37114.json","2026-11-21":"daily-2026-11-21-d58a4cd434bdb4ae.json","2026-11-22":"daily-2026-11-22-77af1dba1f9e9e09.json","2026-11-23":"daily-2026-11-23-118e8f88ea3f6178.json","2026-11-24":"daily-2026-11-24-aa164aab5dada063.json","2026-11-25":"daily-2026-11-25-07d9b614548012c7.json","2026-11-26":"daily-2026-11-26-666a9ba4f49ab4ef.json"},"files":{"contenders":"contenders-5872ed989e0d07ac.json","deck_first":"deck-first-74f2ff4ec4a8e45e.json","deck_pool":"deck-pool-3249521514f20df7.json","players_all":"players-all-432addf6b99dc0b4.json","players_today":"players-today-f6a0ba4e2d57f144.json","top":"top-313935a9f9c49978.json"},"results":{"2026-11-17":"results-2026-11-17-e191a275487feedd.json","2026-11-18":"results-2026-11-18-24b0643ae123ea27.json","2026-11-19":"results-2026-11-19-ad34b01c66aac4d4.json","2026-11-20":"results-2026-11-20-09e6497323e910fa.json","2026-11-21":"results-2026-11-21-bd9e93ecc639b355.json","2026-11-22":"results-2026-11-22-7a5c835b5572b3e5.json","2026-11-23":"results-2026-11-23-cbe219f6baf21bba.json","2026-11-24":"results-2026-11-24-c47f85d4506d3976.json","2026-11-25":"results-2026-11-25-7e3030d1495f6fe4.json"},"revision":894445,"today":"2026-11-25","v":1},"files":{}}</script>
+    <script defer src="/22-static-data.js?v=e782875e"></script>
+    <script defer src="/25-search-the-boards.js?v=e782875e"></script>
     
-    <script defer src="/24-check-a-username.js?v=124698a3"></script>
-    <script defer src="/20-play-the-cards.js?v=124698a3"></script>
+    <script defer src="/24-check-a-username.js?v=e782875e"></script>
+    <script defer src="/20-play-the-cards.js?v=e782875e"></script>
 </body>
 </html>

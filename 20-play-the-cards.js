@@ -1016,6 +1016,7 @@
         if (!event.isPrimary || event.button !== 0) return;
         clearGlow();  // every fresh primary gesture starts with both viewport edges dark
         if (!card || busy || !card.contains(event.target)) return;
+        if (event.target.closest('.info-text')) return;  // an open (i)'s text is for selecting and reading, never for a swipe; the (i) itself is a button like the rest
         var bounds = card.getBoundingClientRect();
         if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) return;
         drag = { card: card, id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, dy: 0,
