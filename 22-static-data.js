@@ -357,7 +357,7 @@
         }
         if (window.eupoiiaPopover) window.eupoiiaPopover.provide = function (button) { return catalog(button.dataset.infoFor).then(function (row) { return row && row.info_html || ''; }); };
         function rowsTable(rows, players, mount, page, view, searching) {
-            page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players && view !== 'today';
+            page = page || 1; var limit = 50, all = rows.length, shown = rows.slice((page - 1) * limit, page * limit), votesColumn = players;
             var html = '<table class="board"><thead><tr><th class="num">#</th><th>Name</th>' + (players ? (votesColumn ? '<th class="num">Votes</th>' : '') + '<th class="num wide">Foresight</th>' : '<th class="num">Rating</th><th class="num" title="wins, draws, losses">W–D–L</th><th class="num">Votes</th>') + '</tr></thead><tbody>';
             shown.forEach(function (row) {
                 html += '<tr' + (players && boardKey && row.key === boardKey ? ' class="me"' : '') + '><td class="num">' + (row.rank || '—') + '</td><td>';
@@ -366,7 +366,7 @@
                 html += '</td>' + (players ? (votesColumn ? '<td class="num">' + Number(row.n) + '</td>' : '') + '<td class="num wide">' + (row.foresight == null ? '—' : Math.round(row.foresight)) + '</td>' : '<td class="num">' + Math.round(row.rating) + '</td><td class="num">' + row.wins + '–' + row.ties + '–' + row.losses + '</td><td class="num">' + row.votes + '</td>') + '</tr>';
             });
             if (!shown.length) html += '<tr><td colspan="' + (players ? (votesColumn ? 4 : 3) : 5) + '">' + (searching ? 'No matching names.'
-                : !players ? 'No votes yet.' : view === 'today' ? "No one has voted on today's Daily 10 yet." : 'No one has voted yet.') + '</td></tr>';
+                : !players ? 'No votes yet.' : view === 'today' ? "No one has voted in the Daily 10 yet." : 'No one has voted yet.') + '</td></tr>';
             html += '</tbody></table>';
             if (all > limit) html += '<nav class="pagination" aria-label="Leaderboard pages"><button type="button" data-static-page="' + Math.max(1, page - 1) + '"' + (page <= 1 ? ' disabled' : '') + '>Previous</button><span>Page ' + page + ' of ' + Math.ceil(all / limit) + '</span><button type="button" data-static-page="' + (page + 1) + '"' + (page * limit >= all ? ' disabled' : '') + '>Next</button></nav>';
             mount.innerHTML = html;

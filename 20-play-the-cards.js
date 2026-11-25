@@ -204,7 +204,7 @@
         var identity = card.querySelector('[data-score-identity]');
         if (!card.hasAttribute('data-shared-result')) {
             var explainer = card.querySelector('.score-explainer');
-            if (explainer) explainer.textContent = 'Your score compares the odds when you voted with the Elo ratings at the end of the day. It can change until the day ends.';
+            if (explainer) explainer.textContent = 'Your score compares the odds when you voted with the current Elo ratings. It can change as other people vote.';
         }
         if (card.hasAttribute('data-shared-result') || !currentPlayer) {
             if (identity && !(identity.hasAttribute('data-funny-name') && !card.hasAttribute('data-shared-result'))) identity.remove();
@@ -673,7 +673,7 @@
         legacy.hash = location.hash;
         location.replace(legacy.href); return;
     }
-    if (mode === 'players') {  // the Players table: Today or All time
+    if (mode === 'players') {  // the Players table: Daily 10 (the view is still named today in links and files) or All time
         var box = game.querySelector('.board-box'), boardRequest = 0;
         boardInvite = document.createElement('p'); boardInvite.className = 'sign-in-invite'; boardInvite.hidden = true;
         box.insertAdjacentElement('beforebegin', boardInvite); inviteLine(boardInvite); authViews();
