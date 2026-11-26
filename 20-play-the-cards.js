@@ -204,7 +204,7 @@
         var identity = card.querySelector('[data-score-identity]');
         if (!card.hasAttribute('data-shared-result')) {
             var explainer = card.querySelector('.score-explainer');
-            if (explainer) explainer.textContent = 'Your score compares the odds when you voted with the current Elo ratings. It changes as other people vote.';
+            if (explainer) explainer.textContent = 'Your score rewards picks the crowd agrees with now, and more so picks it has moved toward since you voted. It changes as other people vote.';
         }
         if (card.hasAttribute('data-shared-result') || !currentPlayer) {
             if (identity && !(identity.hasAttribute('data-funny-name') && !card.hasAttribute('data-shared-result'))) identity.remove();
