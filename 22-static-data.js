@@ -27,7 +27,11 @@
         function scope() { return owner ? owner.handle : options.tab; }
         function dailyKey(day) { return 'eupoiia-daily-' + day + '-' + scope(); }
         function seenKey() { return 'eupoiia-voted-pairs-v1-' + scope(); }
-        function deckKey() { return 'eupoiia-deck-v1-' + scope(); }
+        // A saved deck keeps each card's HTML as it was drawn, so its key carries the card markup's version: when the markup
+        // changes (v2: the (i) by each name, 11/24), bump it and the old decks are dropped rather than shown without the change.
+        var DECK_VERSION = 2;
+        function deckKey() { return 'eupoiia-deck-v' + DECK_VERSION + '-' + scope(); }
+        try { Object.keys(localStorage).forEach(function (k) { var m = /^eupoiia-deck-v([0-9]+)-/.exec(k); if (m && +m[1] < DECK_VERSION) localStorage.removeItem(k); }); } catch (e) {}
         var cachedIdentity = stored('eupoiia-public-account-v1', null), initialToken = options.token();
         var identityBoot = credential(initialToken).then(function (stamp) {
             if (options.token() === initialToken) currentCredential = stamp;
